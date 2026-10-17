@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Geo Royale">
+<meta name="theme-color" content="#1d4f91">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>مذاكرة الجغرافيا</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Luckiest+Guy&family=Lalezar&display=swap">
+<style>
+/* Layout: one-screen game — top bar, lesson chips, a big flip card in the middle, big thumb buttons under it */
+:root {
+  --sky: #cfeaff; --sand: #ffd66b; --nile: #1d4f91; --ink: #1c2740; --paper: #ffffff; --soft: #f3f8ff;
+  --good: #1e9e5a; --again: #e0662b;
+  --display: 'Lalezar', 'Cairo', Tahoma, sans-serif; --body: 'Cairo', Tahoma, sans-serif;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; font-family: var(--body); color: var(--ink);
+  background: linear-gradient(180deg, var(--sky) 0%, #eaf6ff 55%, var(--sand) 100%);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+}
+.app { max-width: 760px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; gap: 12px; padding-block: 12px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 5vw, 38px); margin: 0; color: var(--nile); line-height: 1.1; }
+.stars { background: var(--paper); border-radius: 999px; padding: 6px 16px; font-weight: 900; font-size: 18px; box-shadow: 0 3px 0 rgba(29,79,145,.18); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 3px solid var(--c, var(--nile)); background: var(--paper); color: var(--ink); font: 700 15px var(--body); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--c, var(--nile)); color: #fff; }
+.modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mode { border: none; border-radius: 16px; padding: 10px 6px; font: 400 clamp(17px, 3.4vw, 22px) var(--display); background: var(--paper); color: var(--nile); cursor: pointer; box-shadow: 0 4px 0 rgba(29,79,145,.2); }
+.mode[aria-pressed="true"] { background: var(--nile); color: #fff; }
+.mode small { display: block; font: 600 12px var(--body); opacity: .75; }
+.status { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; color: var(--nile); min-height: 26px; font-variant-numeric: tabular-nums; }
+.bar { flex: 1; height: 10px; background: rgba(255,255,255,.7); border-radius: 99px; margin-inline: 12px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--good); border-radius: 99px; transition: width .3s; }
+.stage { flex: 1; min-height: 280px; perspective: 1400px; display: flex; }
+.card { position: relative; flex: 1; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3,1.3,.5,1); cursor: pointer; }
+.card.flipped { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 28px; background: var(--paper);
+  border: 6px solid var(--c); box-shadow: 0 10px 0 color-mix(in srgb, var(--c) 45%, transparent), 0 18px 40px rgba(28,39,64,.15);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 26px 22px; gap: 12px; overflow: auto; }
+.front { background: color-mix(in srgb, var(--c) 10%, var(--paper)); }
+.back { transform: rotateY(180deg); }
+.tag { position: absolute; top: 14px; right: 16px; background: var(--c); color: #fff; font-weight: 700; font-size: 14px; padding: 2px 14px; border-radius: 99px; }
+.face .no { position: absolute; top: 16px; left: 18px; font-weight: 700; color: color-mix(in srgb, var(--ink) 50%, transparent); font-variant-numeric: tabular-nums; }
+.emo { font-size: clamp(60px, 13vw, 96px); line-height: 1; }
+.q { font-family: var(--display); font-size: clamp(24px, 5vw, 38px); line-height: 1.35; text-wrap: balance; }
+.hint { font-size: 14px; color: color-mix(in srgb, var(--ink) 55%, transparent); }
+.a { font-size: clamp(20px, 3.8vw, 28px); line-height: 1.7; font-weight: 600; text-wrap: balance; }
+.a b { color: var(--c); font-weight: 900; }
+.tk { background: #fff1a8; border-radius: 16px; padding: 8px 16px; font-size: clamp(16px, 3vw, 21px); line-height: 1.6; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.btn { border: none; border-radius: 20px; padding: 16px 10px; font: 400 clamp(20px, 4vw, 26px) var(--display); color: #fff; cursor: pointer; box-shadow: 0 5px 0 rgba(0,0,0,.18); }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+.btn.good { background: var(--good); } .btn.again { background: var(--again); } .btn.nav { background: var(--nile); }
+.btn:focus-visible, .chip:focus-visible, .mode:focus-visible, .card:focus-visible { outline: 4px solid var(--nile); outline-offset: 3px; }
+.done { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--paper); border-radius: 28px; border: 6px solid var(--sand); padding: 24px; gap: 10px; }
+.done .big { font-size: 90px; line-height: 1; }
+.done h2 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 6vw, 44px); margin: 0; color: var(--nile); }
+.done p { font-size: 19px; margin: 0; }
+.timer { font-family: var(--display); font-size: 26px; color: var(--again); font-variant-numeric: tabular-nums; }
+.burst { position: fixed; pointer-events: none; font-size: 34px; animation: fly 1s ease-out forwards; z-index: 9; }
+@keyframes fly { to { transform: translate(var(--dx), var(--dy)) rotate(40deg); opacity: 0; } }
+
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(255,255,255,.6); padding: 5px; border-radius: 20px; }
+.tab { border: none; border-radius: 16px; padding: 10px; font: 400 clamp(20px, 4vw, 26px) var(--display); background: transparent; color: var(--nile); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--nile); color: #fff; box-shadow: 0 3px 0 rgba(0,0,0,.15); }
+.tab:focus-visible, .tile:focus-visible, .zoomable:focus-visible { outline: 4px solid var(--nile); outline-offset: 3px; }
+.view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; overflow: auto; padding: 4px 2px 8px; align-content: start; }
+.tile { border: 5px solid var(--c); background: var(--paper); border-radius: 24px; padding: 16px 12px; cursor: pointer; text-align: center; font-family: var(--body); color: var(--ink);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 40%, transparent); display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
+.tile .te { font-size: clamp(44px, 9vw, 64px); line-height: 1.1; }
+.tile .tn { font: 400 clamp(21px, 4vw, 28px) var(--display); color: var(--c); }
+.tile .tc { font-size: 14px; font-weight: 700; opacity: .7; }
+.tile .ok { position: absolute; top: 8px; left: 10px; background: var(--good); color: #fff; border-radius: 99px; padding: 0 10px; font-size: 13px; font-weight: 700; }
+.intro { background: var(--paper); border-radius: 20px; padding: 10px 16px; font-size: 16px; line-height: 1.7; font-weight: 600; }
+.lhead { display: flex; align-items: center; gap: 10px; }
+.back-btn { border: none; background: var(--paper); color: var(--nile); font: 700 16px var(--body); border-radius: 99px; padding: 6px 14px; cursor: pointer; box-shadow: 0 3px 0 rgba(29,79,145,.18); flex: none; }
+.lname { font: 400 clamp(22px, 4.4vw, 30px) var(--display); color: var(--c); flex: 1; min-width: 0; }
+.dots { display: flex; gap: 5px; flex: none; }
+.dots i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.9); border: 2px solid var(--c); }
+.dots i.on { background: var(--c); }
+.slide { flex: 1; min-height: 0; overflow: auto; background: var(--paper); border-radius: 28px; border: 6px solid var(--c); padding: 18px 20px 22px;
+  box-shadow: 0 8px 0 color-mix(in srgb, var(--c) 40%, transparent); display: flex; flex-direction: column; gap: 12px; }
+.slide h2 { margin: 0; font: 400 clamp(26px, 5.4vw, 40px) var(--display); color: var(--c); text-wrap: balance; display: flex; align-items: center; gap: 10px; }
+.slide h2 span { font-size: 1.2em; }
+.zoomable { width: 100%; max-height: 46vh; object-fit: contain; border-radius: 18px; cursor: zoom-in; background: var(--soft); flex: none; }
+.zhint { font-size: 13px; text-align: center; opacity: .6; margin-top: -6px; }
+.pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pts li { font-size: clamp(18px, 3.5vw, 24px); line-height: 1.65; background: color-mix(in srgb, var(--c) 8%, var(--paper)); border-radius: 14px; padding: 6px 14px; }
+.pts b { color: var(--c); }
+.strick { background: #fff1a8; border: 3px dashed #e3a600; border-radius: 18px; padding: 10px 16px; font-size: clamp(17px, 3.3vw, 22px); line-height: 1.7; }
+.strick::before { content: '💡 الحيلة: '; font-weight: 900; color: #b45f00; }
+.svgbox svg { width: 100%; height: auto; }
+.minis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.mini { text-align: center; background: var(--soft); border-radius: 14px; padding: 6px; font-size: 14px; }
+.mini svg { width: 100%; height: auto; display: block; }
+.zoom { position: fixed; inset: 0; background: rgba(12,20,40,.92); z-index: 20; display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.zoom img { max-width: 100%; max-height: 100%; border-radius: 16px; }
+.zoom button { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: calc(12px + env(safe-area-inset-left, 0px)); border: none; border-radius: 99px; background: #fff; color: #1c2740; font: 700 18px var(--body); padding: 8px 16px; }
+@media (max-width: 520px) { .minis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.qtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.qtype { background: var(--c); color: #fff; font: 400 18px var(--display); padding: 2px 16px; border-radius: 99px; }
+.qles { font-weight: 700; font-size: 14px; opacity: .7; }
+.qemo { font-size: clamp(48px, 10vw, 72px); text-align: center; line-height: 1.1; }
+.qq { font: 400 clamp(23px, 4.6vw, 34px) var(--display); line-height: 1.45; text-align: center; text-wrap: balance; }
+.qq b { color: var(--c); font-weight: 400; }
+.qq u { text-decoration-color: var(--again); text-decoration-thickness: 3px; }
+.elabel { font-weight: 900; font-size: 15px; margin-bottom: 4px; opacity: .85; }
+.easy { background: #e8f4ff; border-radius: 18px; padding: 10px 16px; font-size: clamp(18px, 3.4vw, 23px); line-height: 1.75; }
+.how { background: color-mix(in srgb, var(--c) 10%, var(--paper)); border-radius: 14px; padding: 8px 14px; font-size: clamp(15px, 2.9vw, 18px); line-height: 1.6; }
+.eans { background: #eafaf0; border: 3px solid var(--good); border-radius: 18px; padding: 10px 16px; font-size: clamp(19px, 3.6vw, 25px); line-height: 1.8; font-weight: 600; }
+.eans b { color: var(--good); font-weight: 900; }
+.eans.cloze b { color: transparent; background: #ffe58a; border-radius: 8px; border-bottom: 3px dashed #c58b00; cursor: pointer; }
+.eans.cloze b.peek { color: var(--good); background: transparent; }
+.guide { background: var(--paper); border-radius: 18px; padding: 8px 16px; font-size: 16px; line-height: 1.7; }
+.guide summary { font-weight: 900; cursor: pointer; color: var(--nile); }
+.guide ol { margin: 6px 0; padding-right: 22px; }
+.guide p { margin: 4px 0; }
+
+.tabs { grid-template-columns: repeat(4, 1fr); }
+.tab { font-size: clamp(17px, 3.4vw, 24px); padding: 10px 4px; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { border: 3px solid color-mix(in srgb, var(--c) 35%, transparent); background: var(--paper); border-radius: 18px; padding: 12px 16px; font: 600 clamp(17px, 3.3vw, 22px) var(--body); color: var(--ink); text-align: right; line-height: 1.6; cursor: pointer; }
+.opt.right, .mq.right, .ma.right { background: #dff6e8; border-color: var(--good); }
+.opt.wrong, .ma.wrong { background: #ffe3d6; border-color: var(--again); animation: shake .35s; }
+.opt:disabled { cursor: default; color: var(--ink); }
+.fb { font: 400 clamp(22px, 4.4vw, 30px) var(--display); text-align: center; }
+.fb.ok { color: var(--good); } .fb.no { color: var(--again); }
+.gap { display: inline-block; min-width: 4em; background: #ffe58a; border-bottom: 3px dashed #c58b00; border-radius: 8px; text-align: center; color: #b45f00; }
+.match { flex: 1; min-height: 0; overflow: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mcol { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.mq, .ma { flex: 1; border: 3px solid #c9d6ea; background: var(--paper); border-radius: 16px; padding: 10px 12px; font: 600 clamp(14px, 2.7vw, 18px) var(--body); color: var(--ink); text-align: right; line-height: 1.55; cursor: pointer; }
+.mq { background: #f3f8ff; }
+.mq.sel { border-color: var(--nile); background: #dcebff; box-shadow: 0 0 0 3px var(--nile); }
+.mq:disabled, .ma:disabled { cursor: default; color: var(--ink); }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+.gmapwrap { background: var(--paper); border-radius: 20px; padding: 8px 14px; border: 4px solid var(--gc, var(--nile)); }
+.gmapwrap summary { font: 400 clamp(19px, 3.6vw, 24px) var(--display); color: var(--gc, var(--nile)); cursor: pointer; }
+.gmap { margin: 8px 0 4px; font-size: clamp(15px, 2.9vw, 19px); line-height: 1.6; }
+.gmap.sinai { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.gmap .band { border-radius: 12px; padding: 6px 10px; text-align: center; }
+.gmap small { font-size: .85em; opacity: .85; }
+.gcap { font-size: 13px; opacity: .7; margin-top: 2px; }
+.gmap.east { display: grid; grid-template-columns: 48px minmax(0, 1fr) minmax(0, 30%) 48px; gap: 4px; }
+.gmap .strip { border-radius: 12px; padding: 6px 4px; text-align: center; font-size: .85em; display: flex; flex-direction: column; justify-content: center; }
+.gmap .nile, .gmap .sea { background: #cfe8ff; color: #1d4f91; font-weight: 700; }
+.gmap .mts { background: #f2c9b0; }
+.gmap .desert { background: #fdebc8; border-radius: 12px; padding: 4px; display: flex; flex-direction: column; gap: 4px; }
+.gmap .cell { background: rgba(255,255,255,.6); border-radius: 8px; padding: 4px 8px; }
+.gnote { background: #f1e6ff; border-radius: 14px; padding: 8px 14px; font-size: clamp(16px, 3vw, 20px); line-height: 1.6; }
+
+.tabs { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.tab { font-size: clamp(14px, 3vw, 22px); padding: 9px 2px; }
+.mapbox { flex: none; height: min(46vh, 520px); background: #efe6d4; border-radius: 22px; overflow: hidden; border: 4px solid var(--nile); }
+.mapbox svg { width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.mreg { stroke-width: 2.5; cursor: pointer; transition: opacity .2s; }
+.mreg.on { stroke-width: 4; }
+.mreg.dim { opacity: .45; }
+.river { fill: none; stroke: #2b7fd8; stroke-width: 5; stroke-linecap: round; pointer-events: none; }
+.river.thin { stroke-width: 3; }
+.rlab { font: 400 15px var(--display); paint-order: stroke; stroke: #fff; stroke-width: 4px; pointer-events: none; }
+.sea { font: 700 11px var(--body); fill: #1d4f91; pointer-events: none; }
+.mlab { font-family: var(--body); font-weight: 900; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events: none; }
+.mspot { cursor: pointer; }
+.mspot.on circle { stroke-width: 5; fill: #fff3b0; }
+.mspot.right circle { fill: #c8f2d6; stroke: var(--good); stroke-width: 5; }
+.mspot.wrong circle { fill: #ffd8c8; stroke: var(--again); }
+.shake { animation: shake .35s; }
+.compass { pointer-events: none; }
+.mpanel { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 6px; }
+.mcard { background: var(--paper); border-radius: 22px; border: 5px solid var(--c); padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.minfo { font-size: clamp(18px, 3.4vw, 23px); line-height: 1.7; }
+.minfo b { color: var(--c); }
+.mh { margin: 4px 0 0; font: 400 clamp(19px, 3.6vw, 24px) var(--display); color: var(--c); }
+.mchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.mqs { display: flex; flex-direction: column; gap: 8px; }
+.mq-item { background: color-mix(in srgb, var(--c) 7%, var(--paper)); border-radius: 16px; padding: 8px 12px; }
+.mq-item summary { font-size: clamp(16px, 3vw, 20px); font-weight: 700; line-height: 1.6; cursor: pointer; }
+.mq-item[open] { display: flex; flex-direction: column; gap: 8px; }
+.mq-item .btn { padding: 8px; font-size: 18px; }
+.qtype.small { font-size: 13px; padding: 1px 10px; vertical-align: middle; }
+.mgame { background: var(--paper); border-radius: 22px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.mmode { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mmode .chip { font-size: clamp(16px, 3.2vw, 20px); padding: 8px; }
+.mapbox.globe { background: #0f2a4d; }
+.gline { cursor: pointer; }
+.mapbox.globe .mlab { fill: #fff; stroke: #0f2a4d; }
+.glab { font: 700 12px var(--body); fill: #ffd66b; pointer-events: none; }
+
+.btn.royale { background: linear-gradient(135deg, #7b2ff7, #f107a3); }
+.hud { display: flex; align-items: center; justify-content: space-between; gap: 6px; background: #14163a; color: #fff; border-radius: 16px; padding: 6px 12px; font: 600 clamp(13px, 2.6vw, 17px) var(--body); flex-wrap: wrap; }
+.hud b { color: #ffd66b; }
+.hsk { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; border: 2px solid #fff; }
+.rcard { background: var(--paper); border-radius: 22px; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; border: 5px solid #7b2ff7; }
+.rtag { align-self: flex-start; background: linear-gradient(135deg, #7b2ff7, #f107a3); color: #fff; font: 400 18px var(--display); padding: 2px 16px; border-radius: 99px; }
+.bigemo { font-size: 64px; display: block; }
+.mspot.hl circle { fill: #ffe14d; stroke: #f107a3; stroke-width: 5; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { stroke-width: 9; } }
+.rend { background: #14163a; color: #fff; border-radius: 24px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.rend.win { background: radial-gradient(circle at 50% 20%, #7b2ff7, #14163a 70%); }
+.rend h2 { font: 400 clamp(28px, 6vw, 42px) var(--display); margin: 0; color: #ffd66b; }
+.rend p { margin: 0; font-size: 17px; }
+.rank { font: 400 clamp(54px, 12vw, 80px) var(--display); line-height: 1; color: #fff; text-shadow: 0 4px 0 #f107a3; }
+.tiers { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.tiers span { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; opacity: .45; color: #fff; }
+.tiers span.on { opacity: 1; outline: 3px solid #fff; }
+.gift { border: 4px solid #fff; border-radius: 22px; padding: 14px 26px; font-size: 64px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; animation: wob 1.2s infinite; box-shadow: 0 0 30px var(--rc); }
+.gift span { font: 400 22px var(--display); } .gift small { font: 600 13px var(--body); }
+@keyframes wob { 25% { transform: rotate(-4deg) scale(1.03); } 75% { transform: rotate(4deg) scale(1.03); } }
+.skin { width: 180px; border-radius: 20px; padding: 14px 10px; border: 4px solid #fff; box-shadow: 0 0 26px var(--rc); color: #fff; text-align: center; animation: pop .5s; }
+.skin .se { font-size: 72px; line-height: 1.1; } .skin .sn { font: 400 22px var(--display); text-shadow: 0 2px 0 rgba(0,0,0,.3); } .skin .sr { font-size: 13px; font-weight: 900; opacity: .9; }
+.skin.sm { width: 100%; padding: 8px 4px; box-shadow: none; animation: none; } .skin.sm .se { font-size: 40px; } .skin.sm .sn { font-size: 15px; }
+@keyframes pop { from { transform: scale(.3) rotate(-20deg); opacity: 0; } }
+.locker { position: fixed; inset: 0; z-index: 30; background: rgba(10,12,40,.96); color: #fff; overflow: auto;
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.lk { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.lkh { display: flex; justify-content: space-between; align-items: center; } .lkh h2 { font: 400 34px var(--display); margin: 0; color: #ffd66b; }
+.lk h3 { margin: 6px 0 0; font: 400 22px var(--display); }
+.lk p { margin: 0; }
+.lkg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.lkb { border: none; background: transparent; padding: 0; color: #fff; font: 700 13px var(--body); display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+.lkb.eq .skin { outline: 4px solid #ffd66b; }
+.lkb.lockd { border-radius: 16px; min-height: 110px; align-items: center; justify-content: center; font-size: 34px; opacity: .45; cursor: default; }
+#lkmsg { display: flex; flex-direction: column; align-items: center; }
+@media (max-width: 520px) { .lkg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.loadout { display: flex; gap: 3px; }
+.hsk { width: 34px; height: 34px; font-size: 20px; }
+.skin .sk { font-size: 11px; font-weight: 900; opacity: .9; }
+.packov { display: flex; align-items: flex-start; }
+.ptitle { font: 400 clamp(30px, 6vw, 44px) var(--display); margin: 0; }
+.prow { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; }
+.pslot { position: relative; width: 170px; max-width: 44%; }
+.pslot .skin { width: 100%; }
+.pnew, .pdup { position: absolute; top: -10px; left: -6px; background: #ff3d7f; color: #fff; font: 400 16px var(--display); padding: 2px 12px; border-radius: 99px; transform: rotate(-8deg); }
+.pdup { background: #556; font: 700 12px var(--body); }
+.pback { width: 170px; max-width: 44%; aspect-ratio: 3 / 4; border-radius: 20px; border: 4px solid #fff; font-size: 54px; color: #fff; cursor: pointer;
+  background: repeating-linear-gradient(45deg, #2a1f6b 0 14px, #3b2a8f 14px 28px); box-shadow: 0 0 24px var(--rc); animation: wob 1.4s infinite; }
+.gtot p { margin: 4px 0 0; }
+.gbar { height: 16px; background: rgba(255,255,255,.15); border-radius: 99px; overflow: hidden; }
+.gbar i { display: block; height: 100%; background: linear-gradient(90deg, #31a24c, #2f80ed, #9b51e0, #f2994a); }
+.msrow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.ms { border: 3px solid var(--rc); background: rgba(255,255,255,.06); color: #fff; border-radius: 14px; padding: 6px 2px; display: flex; flex-direction: column; align-items: center; font-size: 20px; cursor: default; }
+.ms b { font-size: 16px; } .ms small { font-size: 10px; opacity: .8; }
+.ms.ready { background: var(--rc); cursor: pointer; animation: wob 1.2s infinite; }
+.ms.lock { opacity: .45; }
+.ktabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.ktabs .chip { --c: #f107a3; }
+@media (max-width: 520px) { .msrow { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.en { font-family: 'Luckiest Guy', 'Cairo', sans-serif; letter-spacing: .4px; }
+.btn.royale, #roy, #locker { font-family: 'Luckiest Guy', 'Lalezar', sans-serif; letter-spacing: .5px; }
+.rend.en h2, .rank, .ptitle { font-family: 'Luckiest Guy', var(--display); }
+.floaty { animation: floaty 4s ease-in-out infinite; }
+@keyframes floaty { 50% { transform: translateY(-9px); } }
+.gshadow { animation: gshadow 4s ease-in-out infinite; transform-origin: 320px 424px; transform-box: view-box; }
+@keyframes gshadow { 50% { transform: scale(.82); opacity: .6; } }
+.star { animation: twinkle 2.8s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .25; } }
+.sunglow { animation: sunpulse 3s ease-in-out infinite; transform-origin: 575px 60px; transform-box: view-box; }
+@keyframes sunpulse { 50% { transform: scale(1.12); } }
+.flake { fill: #fff; font-size: 13px; animation: flake 3.6s linear infinite; pointer-events: none; }
+@keyframes flake { from { transform: translateY(-26px); opacity: 0; } 20% { opacity: 1; } to { transform: translateY(12px); opacity: 0; } }
+.clouds { animation: drift 14s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translateX(40px); } }
+.glab2 { font: 800 11px var(--body); fill: #fff; paint-order: stroke; stroke: #0b3577; stroke-width: 3px; pointer-events: none; }
+.rays { position: fixed; inset: -50%; background: repeating-conic-gradient(from 0deg, rgba(255,215,0,.22) 0 10deg, transparent 10deg 20deg); animation: spin 14s linear infinite; pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.maxov { background: radial-gradient(circle at 50% 30%, #6a1bb3, #12052e 70%); }
+.maxsub { color: #ffd700; font-size: 18px; }
+.gift.max { animation: wob .9s infinite; box-shadow: 0 0 40px #ffd700, 0 0 80px #ff3d7f; }
+.flipin { animation: flipin .55s ease-out; }
+@keyframes flipin { from { transform: rotateY(90deg) scale(.8); } }
+.pback.next { outline: 4px solid #ffd700; }
+.skin.r-l { box-shadow: 0 0 34px #ffb300, 0 0 70px #ff3d7f; }
+.conf { position: fixed; top: -40px; z-index: 50; font-size: 26px; pointer-events: none; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.tab { font-size: clamp(17px, 3.6vw, 24px); }
+.ray { stroke: #ffd23f; stroke-width: 3; stroke-dasharray: 2 6; stroke-linecap: round; marker-end: url(#ar); pointer-events: none; animation: rayflow 1s linear infinite; }
+@keyframes rayflow { to { stroke-dashoffset: -8; } }
+
+.backup { background: rgba(255,255,255,.07); border-radius: 16px; padding: 8px 14px; }
+.backup summary { font-weight: 700; cursor: pointer; color: #ffd66b; }
+.backup p { font-family: var(--body); font-size: 14px; margin: 6px 0; }
+.bkrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bkrow .btn { padding: 10px; font-size: 17px; }
+#bkcode { width: 100%; margin-top: 8px; border-radius: 12px; border: 2px solid #ffd66b; background: #0d0f2b; color: #fff; padding: 8px; font: 12px monospace; direction: ltr; }
+#bkmsg { font-family: var(--body); font-size: 14px; margin-top: 4px; }
+@media (prefers-reduced-motion: reduce) { .floaty, .gshadow, .star, .sunglow, .flake, .clouds, .rays, .gift, .pback { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .burst { display: none; } }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🦀 مذاكرة الجغرافيا 🐐</h1>
+    <div class="stars" id="stars">⭐ 0</div>
+  </header>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-study" aria-selected="true" hidden>📚 المذاكرة</button>
+    <button class="tab" role="tab" id="t-map" aria-selected="false">🗺️ الخريطة</button>
+    <button class="tab" role="tab" id="t-exam" aria-selected="false">📝 الامتحان</button>
+    <button class="tab" role="tab" id="t-play" aria-selected="false">🕹️ العب</button>
+    <button class="tab" role="tab" id="t-quiz" aria-selected="false" hidden>🃏 الكروت</button>
+  </div>
+  <section class="view" id="study"></section>
+  <section class="view" id="map" hidden></section>
+  <section class="view" id="exam" hidden></section>
+  <section class="view" id="play" hidden></section>
+  <section class="view" id="quiz" hidden>
+  <div class="chips" id="chips" role="group" aria-label="اختار الدرس"></div>
+  <div class="modes" role="group" aria-label="اختار اللعبة">
+    <button class="mode" id="m-study" aria-pressed="true">📖 ذاكر<small>اقلب الكارت</small></button>
+    <button class="mode" id="m-test" aria-pressed="false">🎯 اختبر نفسك<small>عارفها ولا لسه؟</small></button>
+    <button class="mode" id="m-race" aria-pressed="false">⏱️ تحدي الدقيقة<small>كام في 60 ثانية؟</small></button>
+  </div>
+  <div class="status"><span id="left"></span><span class="bar"><i id="bar"></i></span><span id="right"></span></div>
+  <div class="stage" id="stage"></div>
+  <div class="actions" id="actions"></div>
+  </section>
+</div>
+<div class="zoom" id="zoom" hidden><button id="zclose">✕ اقفل</button><img id="zimg" alt=""></div>
+
+<script>
+const CATS = [{"id": "c0", "name": "سطح مصر", "color": "#e67e22"}, {"id": "c1", "name": "تشكيل السطح", "color": "#c0392b"}, {"id": "c2", "name": "العرض والطول", "color": "#8e44ad"}, {"id": "c3", "name": "الطقس والمناخ", "color": "#2c7be5"}, {"id": "c4", "name": "الفصول", "color": "#16a085"}];
+const CARDS = [{"n": 1, "cat": "c0", "emo": "🗺️", "q": "سطح مصر بيتكون من كام وحدة تضاريسية؟ وإيه هي؟", "a": "<b>4 وحدات:</b> الصحراء الغربية • الصحراء الشرقية • شبه جزيرة سيناء • وادي النيل والدلتا", "t": ""}, {"n": 2, "cat": "c0", "emo": "🐪", "q": "إيه أكبر وحدة تضاريسية في مصر؟", "a": "<b>الصحراء الغربية</b>", "t": "غرب النيل وواخدة أكبر حتة في الخريطة 🟨"}, {"n": 3, "cat": "c0", "emo": "🌴", "q": "الصحراء الغربية بتتميز بوجود إيه؟", "a": "<b>منخفضات وواحات</b>", "t": ""}, {"n": 4, "cat": "c0", "emo": "🥣", "q": "يعني إيه «منخفض»؟", "a": "منطقة أرضية <b>منخفضة</b> عن المناطق المحيطة بيها", "t": "زي طبق فاضي في الأرض 🥣"}, {"n": 5, "cat": "c0", "emo": "💧", "q": "يعني إيه «واحة»؟", "a": "مكان في الصحراء فيه <b>مياه</b> ← فتنبت النباتات ← ويعيش الناس", "t": "مية + نخل + بيوت 🌴🏠"}, {"n": 6, "cat": "c0", "emo": "🚂", "q": "إيه أكبر المنخفضات؟ وفيه سكان؟", "a": "<b>منخفض القطارة</b> — <b>نادر</b> وجود السكان", "t": "قطر كبير بس فاضي مفيهوش ركاب 🚂"}, {"n": 7, "cat": "c0", "emo": "🏡", "q": "اذكر أهم 5 منخفضات مأهولة بالسكان", "a": "<b>الداخلة • الخارجة • البحرية • سيوة • الفرافرة</b>", "t": "«دَخَل وخَرَج وبَحَّر لسيوة وهو فرفور» 😄"}, {"n": 8, "cat": "c0", "emo": "⛰️", "q": "الصحراء الشرقية بتقع فين؟", "a": "بين <b>نهر النيل</b> و<b>البحر الأحمر</b>", "t": ""}, {"n": 9, "cat": "c0", "emo": "🏔️", "q": "إيه أشهر جبال الصحراء الشرقية؟", "a": "<b>جبال البحر الأحمر</b>", "t": ""}, {"n": 10, "cat": "c0", "emo": "💎", "q": "اذكر 3 ثروات معدنية في الصحراء الشرقية", "a": "<b>ذهب • نحاس • حديد</b>", "t": "«ذهبت أنحت حديد» 🔨"}, {"n": 11, "cat": "c0", "emo": "🛢️", "q": "اذكر مصادر الطاقة في الصحراء الشرقية", "a": "<b>البترول • الغاز الطبيعي</b>", "t": "اللي بيمشّي العربية والبوتاجاز 🚗🍳"}, {"n": 12, "cat": "c0", "emo": "🔺", "q": "سيناء بتقع فين؟ وشكلها إيه؟", "a": "تقع في <b>شرق مصر</b> — شكلها <b>مثلث</b> — وبتتميز بوجود <b>جبال</b>", "t": "حتة بيتزا مقلوبة 🍕"}, {"n": 13, "cat": "c0", "emo": "🏔️", "q": "إيه أشهر جبال سيناء؟", "a": "<b>جبل سانت كاترين</b>", "t": "سيناء وسانت كاترين وسويس… كله «س» 🐍"}, {"n": 14, "cat": "c0", "emo": "🌊", "q": "إيه الخليجين اللي حوالين سيناء؟", "a": "<b>خليج السويس</b> (غرب) و<b>خليج العقبة</b> (شرق)", "t": ""}, {"n": 15, "cat": "c0", "emo": "🌾", "q": "يعني إيه «وادي النيل»؟ وبيمتد لحد فين؟", "a": "الأرض على <b>جانبي</b> نهر النيل وبتتميز <b>بالزراعة</b> — من <b>الحدود الجنوبية</b> لمصر <b>حتى القاهرة</b>", "t": "ساق الوردة 🌷"}, {"n": 16, "cat": "c0", "emo": "🔺", "q": "الدلتا شكلها إيه؟ ومهمة ليه؟", "a": "شكلها <b>مثلث</b> — ومن <b>أهم مناطق الزراعة</b>", "t": "الوردة المفتوحة 🌷 — ومثلث زي سيناء!"}, {"n": 17, "cat": "c0", "emo": "⬆️", "q": "نهر النيل بيجري من فين لفين؟", "a": "من <b>الجنوب</b> إلى <b>الشمال</b> (البحر المتوسط)", "t": ""}, {"n": 18, "cat": "c1", "emo": "🔨", "q": "سطح مصر اتشكّل بفعل إيه؟", "a": "<b>عوامل داخلية</b> و<b>عوامل خارجية</b>", "t": ""}, {"n": 19, "cat": "c1", "emo": "🔥", "q": "اذكر العوامل الداخلية", "a": "<b>الالتواءات • الانكسارات</b> — بتحصل من <b>داخل</b> الأرض", "t": "عجينة جوه الأرض بتتلوي وتتكسر 🍪"}, {"n": 20, "cat": "c1", "emo": "〰️", "q": "الالتواءات بتؤدي لإيه؟", "a": "تكوّن <b>الجبال</b>", "t": "⚠️ في الامتحان: جبال البحر الأحمر اتكونت بسبب <b>الحركات الانكسارية</b>"}, {"n": 21, "cat": "c1", "emo": "⚡", "q": "الانكسارات بتؤدي لإيه؟", "a": "تكوّن <b>جبال</b> و<b>انخفاضات</b> — زي <b>جبال البحر الأحمر</b>", "t": "كسرت العجينة: حتة طلعت وحتة نزلت"}, {"n": 22, "cat": "c1", "emo": "🌬️", "q": "اذكر العوامل الخارجية", "a": "<b>الرياح • المياه</b> — بتحصل من <b>خارج</b> الأرض", "t": "حاجات بتشوفها بعينك 👀"}, {"n": 23, "cat": "c1", "emo": "🏜️", "q": "الرياح بتعمل إيه في سطح الأرض؟", "a": "تسبب <b>التعرية</b> ونقل <b>الرمال</b> وتشكيل <b>الكثبان الرملية</b>", "t": ""}, {"n": 24, "cat": "c1", "emo": "💧", "q": "المياه بتعمل إيه في سطح الأرض؟", "a": "تسبب <b>التعرية</b> و<b>تنحت الصخور</b> وتغيّر شكل السطح", "t": ""}, {"n": 25, "cat": "c1", "emo": "🏞️", "q": "يعني إيه «أودية جافة»؟", "a": "أودية <b>كان فيها مياه ثم جفّت</b>", "t": ""}, {"n": 26, "cat": "c2", "emo": "↔️", "q": "يعني إيه دوائر العرض؟ وعددها كام؟", "a": "خطوط وهمية <b>أفقية</b> بتحيط بالكرة من الشرق للغرب — عددها <b>180</b> دائرة تقريبًا", "t": "عريضة نايمة زي الحزام 👖"}, {"n": 27, "cat": "c2", "emo": "↕️", "q": "يعني إيه خطوط الطول؟ وعددها كام؟", "a": "خطوط وهمية <b>رأسية</b> من القطب الشمالي للجنوبي — عددها <b>360</b> خط", "t": "طويلة واقفة زي العمود 🧍 — والأطول أكتر عددًا"}, {"n": 28, "cat": "c2", "emo": "🔴", "q": "إيه أهم دائرة عرض؟", "a": "<b>خط الاستواء 0°</b> — في منتصف الكرة، و<b>أكبر</b> دائرة عرض", "t": ""}, {"n": 29, "cat": "c2", "emo": "🕰️", "q": "إيه أهم خط طول؟", "a": "<b>خط جرينتش 0°</b>", "t": ""}, {"n": 30, "cat": "c2", "emo": "🦀", "q": "مدار السرطان: درجته كام؟ وبيمر فين؟", "a": "<b>23.5° شمالًا</b> — بيمر في <b>جنوب مصر</b>", "t": "الكابوريا طالعة شمال لمصر 🦀"}, {"n": 31, "cat": "c2", "emo": "🐐", "q": "مدار الجدي: درجته كام؟", "a": "<b>23.5° جنوبًا</b>", "t": "«الجـدي» و«جـنوب» الاتنين بـ «ج» 🐐"}, {"n": 32, "cat": "c2", "emo": "❄️", "q": "الدائرتين القطبيتين درجتهم كام؟", "a": "<b>66.5°</b> — الشمالية شمالًا والجنوبية جنوبًا", "t": "توأم: نفس الرقم 👯 — و23.5 + 66.5 = 90"}, {"n": 33, "cat": "c2", "emo": "🧊", "q": "القطب الشمالي والجنوبي درجتهم كام؟", "a": "الاتنين <b>90°</b> — القطب الشمالي فوق خالص والجنوبي تحت خالص", "t": ""}, {"n": 34, "cat": "c2", "emo": "🔻", "q": "دوائر العرض بتتغير إزاي لما نروح للقطبين؟", "a": "بتـ<b>صغر</b> — وخط الاستواء هو الأكبر", "t": ""}, {"n": 35, "cat": "c2", "emo": "🧭", "q": "دوائر العرض بتساعد في إيه؟", "a": "تحديد المكان <b>شمال أو جنوب</b> الاستواء + معرفة <b>الأقاليم المناخية</b> ودرجات الحرارة", "t": ""}, {"n": 36, "cat": "c2", "emo": "⏰", "q": "خطوط الطول بتساعد في إيه؟", "a": "تحديد المكان <b>شرق أو غرب</b> جرينتش + حساب <b>فرق التوقيت</b>", "t": ""}, {"n": 37, "cat": "c2", "emo": "⏱️", "q": "فرق التوقيت بين خطوط الطول كام؟", "a": "كل خط والي بعده = <b>4 دقائق</b> — كل <b>15°</b> = <b>ساعة</b>", "t": "15 × 4 = 60 دقيقة ✅"}, {"n": 38, "cat": "c2", "emo": "📍", "q": "يعني إيه «الموقع الفلكي»؟", "a": "تحديد مكان الدولة باستخدام <b>دوائر العرض</b> و<b>خطوط الطول</b>", "t": ""}, {"n": 39, "cat": "c2", "emo": "🇪🇬", "q": "موقع مصر الفلكي إيه؟", "a": "<b>شمال</b> خط الاستواء و<b>شرق</b> خط جرينتش", "t": "مصر «ش ش» 😎"}, {"n": 40, "cat": "c2", "emo": "⚠️", "q": "صح ولا غلط: خطوط الطول أقل من دوائر العرض", "a": "<b>غلط ❌</b> — خطوط الطول <b>أكتر</b> (360 مقابل 180)", "t": ""}, {"n": 41, "cat": "c3", "emo": "🌦️", "q": "يعني إيه «الطقس»؟", "a": "وصف حالة الجو في فترة <b>قصيرة</b>: يوم أو أسبوع أو شهر", "t": "«الطقس النهارده» 📺 — كلمة قصيرة = وقت قصير"}, {"n": 42, "cat": "c3", "emo": "🌍", "q": "يعني إيه «المناخ»؟", "a": "وصف حالة الجو في فترة <b>طويلة</b>: فصل أو سنة", "t": ""}, {"n": 43, "cat": "c3", "emo": "🎛️", "q": "اذكر العوامل المؤثرة في المناخ", "a": "<b>الموقع الفلكي</b> • <b>القرب أو البعد عن المسطحات المائية</b> • <b>مظاهر السطح</b>", "t": "صاروخ في الفلك 🚀 وقع في المية 🌊 وطلع على السطح ⛰️"}, {"n": 44, "cat": "c3", "emo": "🌡️", "q": "الحرارة في المناطق المنخفضة والمرتفعة؟", "a": "المنخفضة: الحرارة <b>ترتفع</b> 🔥 — المرتفعة: الحرارة <b>تنخفض</b> ❄️", "t": "فوق الجبل بتبرد — تلج سانت كاترين 🧥"}, {"n": 45, "cat": "c3", "emo": "🏖️", "q": "الحرارة في المناطق القريبة من المياه والداخلية؟", "a": "القريبة من المياه: <b>معتدلة</b> — الداخلية: <b>أعلى</b>", "t": "جنب البحر الجو لطيف 🏖️"}, {"n": 46, "cat": "c3", "emo": "🏜️", "q": "مناخ معظم مصر إيه؟ والشمال؟", "a": "معظم مصر: <b>الإقليم الصحراوي الحار</b> — الشمال: <b>إقليم البحر المتوسط</b>", "t": ""}, {"n": 47, "cat": "c3", "emo": "🗂️", "q": "يعني إيه «الإقليم المناخي»؟", "a": "مساحة من الأرض ليها <b>نفس الخصائص المناخية</b>: حرارة – رياح – أمطار", "t": ""}, {"n": 48, "cat": "c3", "emo": "🔄", "q": "يعني إيه «الدورة السنوية»؟", "a": "دوران الأرض حوالين الشمس مرة كل <b>365 يوم وربع</b>", "t": ""}, {"n": 49, "cat": "c3", "emo": "😷", "q": "إيه هي رياح الخماسين؟", "a": "رياح <b>محمّلة بالأتربة والرمال</b> بتسبب <b>ضرر</b> للإنسان (الجهاز التنفسي) والمحاصيل — بتهب في <b>الربيع</b>", "t": "الربيع + كمامة 😷"}, {"n": 50, "cat": "c4", "emo": "🗓️", "q": "إيه الفصول المناخية في مصر؟", "a": "<b>الشتاء • الربيع • الصيف • الخريف</b>", "t": ""}, {"n": 51, "cat": "c4", "emo": "❄️", "q": "فصل الشتاء: الشمس عمودية على إيه؟ والجو؟", "a": "<b>مدار الجدي</b> 🐐 — بارد + أمطار + تلج على جبال زي <b>سانت كاترين</b>", "t": "الجدي بيستخبى من البرد 🐐"}, {"n": 52, "cat": "c4", "emo": "🌸", "q": "فصل الربيع: الشمس عمودية على إيه؟ والجو؟", "a": "<b>خط الاستواء</b> — معتدل + بتهب <b>رياح الخماسين</b>", "t": "توأم الخريف 👯"}, {"n": 53, "cat": "c4", "emo": "☀️", "q": "فصل الصيف: الشمس عمودية على إيه؟ والجو؟", "a": "<b>مدار السرطان</b> 🦀 — حار وترتفع الحرارة في الجنوب، ومعتدل على السواحل الشمالية", "t": "كابوريا على البحر في الصيف 🦀🏖️"}, {"n": 54, "cat": "c4", "emo": "🍂", "q": "فصل الخريف: الشمس عمودية على إيه؟ والجو؟", "a": "<b>خط الاستواء</b> — معتدل + أحيانًا تنزل أمطار", "t": "توأم الربيع 👯"}];
+const LESSONS = [{"id": "l0", "cat": "c0", "name": "سطح مصر", "emo": "🗺️", "color": "#e67e22", "slides": [{"title": "مظاهر سطح مصر", "emo": "🗺️", "pts": ["سطح مصر بيتكون من <b>4 وحدات تضاريسية</b>", "1️⃣ <b>الصحراء الغربية</b> — غرب النيل وهي <b>الأكبر</b> 🟨", "2️⃣ <b>الصحراء الشرقية</b> — بين النيل والبحر الأحمر 🟥", "3️⃣ <b>شبه جزيرة سيناء</b> — في الشرق وشكلها مثلث 🟪", "4️⃣ <b>وادي النيل والدلتا</b> — الشريط الأخضر في النص 🟩"], "trick": "رتّبهم على الخريطة من الغرب للشرق: <b>غربية ← نيل ← شرقية ← سيناء</b> 👈", "img": "img/map.jpg", "html": ""}, {"title": "الصحراء الغربية", "emo": "🐪", "pts": ["<b>أكبر</b> الوحدات التضاريسية في مصر", "بتتميز بوجود <b>منخفضات وواحات</b>", "<b>المنخفض:</b> منطقة أرضية منخفضة عن المناطق اللي حواليها 🥣", "<b>الواحة:</b> مكان في الصحراء فيه <b>مياه</b> ← فتنبت النباتات ← ويعيش الناس 🌴"], "trick": "المنخفض زي <b>طبق فاضي</b> في الأرض، والواحة = <b>مية + نخل + بيوت</b>", "img": "img/west.jpg", "html": ""}, {"title": "المنخفضات", "emo": "🏡", "pts": ["<b>منخفض القطارة:</b> أكبر المنخفضات — بس <b>نادر</b> وجود السكان 🚂", "أهم 5 منخفضات <b>مأهولة بالسكان</b>:", "<b>الداخلة • الخارجة • البحرية • سيوة • الفرافرة</b>"], "trick": "قول 3 مرات بصوت عالي: «<b>دَخَل</b> و<b>خَرَج</b> و<b>بَحَّر</b> لـ<b>سيوة</b> وهو <b>فرفور</b>» 😄<br>والقطارة = <b>قطر كبير بس فاضي</b> مفيهوش ركاب 🚂", "img": "", "html": ""}, {"title": "الصحراء الشرقية", "emo": "⛰️", "pts": ["بين <b>نهر النيل</b> و<b>البحر الأحمر</b>", "فيها جبال، أشهرها <b>جبال البحر الأحمر</b> 🏔️", "ثروات معدنية: <b>ذهب • نحاس • حديد</b> 💎", "مصادر طاقة: <b>بترول • غاز طبيعي</b> 🛢️🔥"], "trick": "الشرقية <b>خزنة كنز</b> 💰 — «<b>ذهبت أنحت حديد</b>» = ذهب، نحاس، حديد", "img": "img/east.jpg", "html": ""}, {"title": "شبه جزيرة سيناء", "emo": "🔺", "pts": ["تقع في <b>شرق مصر</b> — شكلها <b>مثلث</b>", "بتتميز بوجود <b>جبال</b>", "أشهرها <b>جبل سانت كاترين</b> 🏔️", "حواليها <b>خليج السويس</b> (غرب) و<b>خليج العقبة</b> (شرق) والبحر الأحمر (جنوب)"], "trick": "<b>س</b>يناء و<b>س</b>انت كاترين و<b>س</b>ويس — كلهم بـ «س» 🐍 • وشكلها حتة بيتزا مقلوبة 🍕", "img": "img/sinai.jpg", "html": ""}, {"title": "وادي النيل والدلتا", "emo": "🌿", "pts": ["<b>وادي النيل:</b> الأرض على <b>جانبي</b> النيل وبتتميز <b>بالزراعة</b> 🌾", "بيمتد من <b>الحدود الجنوبية</b> لمصر <b>حتى القاهرة</b>", "<b>الدلتا:</b> شكلها <b>مثلث</b> ومن أهم مناطق الزراعة", "النيل بيجري من <b>الجنوب</b> للشمال ⬆️ ويصب في البحر المتوسط"], "trick": "النيل <b>وردة</b> 🌷: الساق = وادي النيل، والوردة المفتوحة = الدلتا", "img": "img/nile.jpg", "html": ""}]}, {"id": "l1", "cat": "c1", "name": "تشكيل السطح", "emo": "🔨", "color": "#c0392b", "slides": [{"title": "إزاي اتشكّل سطح مصر؟", "emo": "🔨", "pts": ["سطح مصر اتشكّل بفعل <b>عوامل داخلية</b> و<b>عوامل خارجية</b>", "🔥 الداخلية: بتحصل من <b>داخل</b> الأرض", "🌬️ الخارجية: بتحصل من <b>خارج</b> الأرض"], "trick": "بص على الصورة: الأحمر = <b>جوه</b> الأرض، والأخضر = <b>بره</b>", "img": "img/forces.jpg", "html": ""}, {"title": "العوامل الداخلية", "emo": "🔥", "pts": ["<b>الالتواءات</b> ← تكوّن <b>جبال</b> 〰️", "<b>الانكسارات</b> ← تكوّن <b>جبال + انخفاضات</b> ⚡ — زي <b>جبال البحر الأحمر</b>"], "trick": "الأرض زي <b>عجينة</b> 🍪: لو <b>لويتها</b> يطلع جبل، ولو <b>كسرتها</b> يطلع جبل + حفرة", "img": "", "html": ""}, {"title": "العوامل الخارجية", "emo": "🌬️", "pts": ["<b>الرياح:</b> تعرية + نقل الرمال + تشكيل <b>الكثبان الرملية</b> 🏜️", "<b>المياه:</b> تعرية + <b>تنحت الصخور</b> وتغيّر شكل السطح 💧", "<b>الأودية الجافة:</b> أودية كان فيها مياه <b>ثم جفّت</b> 🏞️"], "trick": "الخارجية حاجات <b>بتشوفها بعينك</b>: <b>هوا</b> 💨 و<b>مية</b> 💧", "img": "", "html": ""}]}, {"id": "l2", "cat": "c2", "name": "العرض والطول", "emo": "🌐", "color": "#8e44ad", "slides": [{"title": "دوائر العرض وخطوط الطول", "emo": "🌐", "pts": ["خطوط <b>وهمية</b> بنرسمها على الكرة الأرضية عشان نحدد مكان أي دولة", "↔️ <b>دوائر العرض:</b> أفقية — عددها <b>180</b> تقريبًا", "↕️ <b>خطوط الطول:</b> رأسية — عددها <b>360</b>"], "trick": "<b>العرض</b> عريض نايم زي <b>الحزام</b> 👖 • <b>الطول</b> طويل واقف زي <b>العمود</b> 🧍 — والطول أطول فعدده أكتر", "img": "img/lat.jpg", "html": ""}, {"title": "أهم دوائر العرض", "emo": "🦀", "pts": ["🔴 <b>خط الاستواء 0°</b> — في النص، و<b>أكبر</b> دائرة", "🦀 <b>مدار السرطان 23.5° شمالًا</b> — بيمر في <b>جنوب مصر</b>", "🐐 <b>مدار الجدي 23.5° جنوبًا</b>", "❄️🐧 <b>الدائرتين القطبيتين 66.5°</b> شمال وجنوب", "🧊 <b>القطبين 90°</b> — وكل ما نقرب لهم الدوائر <b>تصغر</b>"], "trick": "«<b>الجـدي</b>» و«<b>جـنوب</b>» الاتنين بـ «ج» 🐐 — يبقى <b>السرطان شمال</b> 🦀<br>و <b>23.5 + 66.5 = 90</b> 🤯", "img": "", "html": "<svg viewBox=\"0 0 640 400\" width=\"100%\" style=\"direction:ltr\"><circle cx=\"200\" cy=\"190\" r=\"150\" fill=\"#3b8fd9\" stroke=\"#1f3a68\" stroke-width=\"4\"/><ellipse cx=\"200\" cy=\"190\" rx=\"18\" ry=\"150\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" stroke-dasharray=\"6 5\"/><text x=\"200\" y=\"366\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\" fill=\"#e84393\">خط جرينتش 0° (واقف ↕️)</text><ellipse cx=\"200\" cy=\"52.4\" rx=\"59.8\" ry=\"4.8\" fill=\"none\" stroke=\"#7fb3ff\" stroke-width=\"3\"/><line x1=\"259.8\" y1=\"52.4\" x2=\"380\" y2=\"52.4\" stroke=\"#7fb3ff\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"386\" y=\"58.4\" font-size=\"18\" font-weight=\"700\" fill=\"#1f2a44\">❄️ القطبية الشمالية 66.5°</text><ellipse cx=\"200\" cy=\"130.2\" rx=\"137.6\" ry=\"11.0\" fill=\"none\" stroke=\"#f2a900\" stroke-width=\"5\"/><line x1=\"337.6\" y1=\"130.2\" x2=\"380\" y2=\"130.2\" stroke=\"#f2a900\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"386\" y=\"136.2\" font-size=\"18\" font-weight=\"700\" fill=\"#1f2a44\">🦀 مدار السرطان 23.5° شمال</text><ellipse cx=\"200\" cy=\"190.0\" rx=\"150.0\" ry=\"12.0\" fill=\"none\" stroke=\"#e74c3c\" stroke-width=\"5\"/><line x1=\"350.0\" y1=\"190.0\" x2=\"380\" y2=\"190.0\" stroke=\"#e74c3c\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"386\" y=\"196.0\" font-size=\"18\" font-weight=\"700\" fill=\"#1f2a44\">🔴 خط الاستواء 0°</text><ellipse cx=\"200\" cy=\"249.8\" rx=\"137.6\" ry=\"11.0\" fill=\"none\" stroke=\"#2c7be5\" stroke-width=\"5\"/><line x1=\"337.6\" y1=\"249.8\" x2=\"380\" y2=\"249.8\" stroke=\"#2c7be5\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"386\" y=\"255.8\" font-size=\"18\" font-weight=\"700\" fill=\"#1f2a44\">🐐 مدار الجدي 23.5° جنوب</text><ellipse cx=\"200\" cy=\"327.6\" rx=\"59.8\" ry=\"4.8\" fill=\"none\" stroke=\"#7fb3ff\" stroke-width=\"3\"/><line x1=\"259.8\" y1=\"327.6\" x2=\"380\" y2=\"327.6\" stroke=\"#7fb3ff\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"386\" y=\"333.6\" font-size=\"18\" font-weight=\"700\" fill=\"#1f2a44\">🐧 القطبية الجنوبية 66.5°</text><rect x=\"230\" y=\"111.6\" width=\"34\" height=\"22.2\" rx=\"5\" fill=\"#e74c3c\" stroke=\"#fff\" stroke-width=\"2\"/><text x=\"247\" y=\"105.6\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"900\" fill=\"#fff\">🇪🇬 مصر</text><text x=\"200\" y=\"28\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">القطب الشمالي 90° 🧊</text></svg>"}, {"title": "خطوط الطول وفرق التوقيت", "emo": "⏰", "pts": ["أهم خط طول: <b>خط جرينتش 0°</b>", "دوائر العرض بتحدد <b>شمال/جنوب</b> + الأقاليم المناخية ☀️❄️", "خطوط الطول بتحدد <b>شرق/غرب</b> + <b>فرق التوقيت</b> ⏰", "كل خط والي بعده = <b>4 دقائق</b> • كل <b>15°</b> = <b>ساعة</b>"], "trick": "<b>15 × 4 = 60 دقيقة</b> = ساعة — لو فاكر رقم تجيب التاني!", "img": "", "html": ""}, {"title": "الموقع الفلكي لمصر", "emo": "🇪🇬", "pts": ["<b>الموقع الفلكي:</b> تحديد مكان الدولة بدوائر العرض وخطوط الطول", "مصر تقع <b>شمال</b> خط الاستواء و<b>شرق</b> خط جرينتش", "ومدار <b>السرطان</b> بيمر في <b>جنوبها</b> 🦀", "⚠️ «خطوط الطول أقل من دوائر العرض» = <b>غلط</b>"], "trick": "مصر «<b>ش ش</b>» 😎 = <b>ش</b>مال الاستواء + <b>ش</b>رق جرينتش", "img": "", "html": ""}]}, {"id": "l3", "cat": "c3", "name": "الطقس والمناخ", "emo": "⛅", "color": "#2c7be5", "slides": [{"title": "الطقس والمناخ", "emo": "⛅", "pts": ["🌦️ <b>الطقس:</b> حالة الجو في فترة <b>قصيرة</b> — يوم أو أسبوع أو شهر", "🌍 <b>المناخ:</b> حالة الجو في فترة <b>طويلة</b> — فصل أو سنة"], "trick": "«<b>الطقس النهارده</b> حر» 📺 = قصير • «<b>مناخ مصر</b>» = طويل", "img": "", "html": ""}, {"title": "العوامل المؤثرة في المناخ", "emo": "🎛️", "pts": ["🌐 <b>الموقع الفلكي</b>", "🌊 <b>القرب أو البعد</b> عن المسطحات المائية", "⛰️ <b>مظاهر السطح</b>"], "trick": "<b>صاروخ</b> 🚀 في الفلك ← وقع في <b>المية</b> 🌊 ← وطلع على <b>السطح</b> ⛰️", "img": "", "html": ""}, {"title": "قواعد الحرارة", "emo": "🌡️", "pts": ["المناطق <b>المنخفضة</b> ← الحرارة <b>ترتفع</b> 🔥", "المناطق <b>المرتفعة</b> ← الحرارة <b>تنخفض</b> ❄️", "القريبة من <b>المياه</b> ← حرارة <b>معتدلة</b> 😌", "المناطق <b>الداخلية</b> ← حرارة <b>أعلى</b> 🥵"], "trick": "فوق الجبل بتبرد 🧥 — عشان كده بينزل <b>تلج على سانت كاترين</b>، وجنب البحر الجو لطيف 🏖️", "img": "", "html": ""}, {"title": "مناخ مصر", "emo": "🏜️", "pts": ["معظم مصر: <b>الإقليم الصحراوي الحار</b>", "الشمال: <b>إقليم البحر المتوسط</b> 🌊", "<b>الإقليم المناخي:</b> مساحة ليها نفس الخصائص — حرارة، رياح، أمطار", "<b>الدورة السنوية:</b> دوران الأرض حول الشمس كل <b>365 يوم وربع</b> 🔄"], "trick": "", "img": "", "html": ""}, {"title": "رياح الخماسين", "emo": "😷", "pts": ["رياح <b>محمّلة بالأتربة والرمال</b>", "بتسبب <b>ضرر</b> للإنسان (الجهاز التنفسي) وللمحاصيل الزراعية 🌾", "بتهب في فصل <b>الربيع</b> 🌸"], "trick": "«خماسين» = حوالي <b>خمسين يوم</b> في الربيع بنلبس فيهم <b>كمامة</b> 😷", "img": "", "html": ""}]}, {"id": "l4", "cat": "c4", "name": "الفصول", "emo": "🌸", "color": "#16a085", "slides": [{"title": "الشمس فين في كل فصل؟", "emo": "☀️", "pts": ["❄️ <b>الشتاء:</b> الشمس على <b>مدار الجدي</b> 🐐", "🌸 <b>الربيع:</b> على <b>خط الاستواء</b>", "☀️ <b>الصيف:</b> على <b>مدار السرطان</b> 🦀", "🍂 <b>الخريف:</b> على <b>خط الاستواء</b>"], "trick": "الشمس طالعة نازلة زي <b>الأسانسير</b> 🛗: شتا تحت ← ربيع النص ← صيف فوق ← خريف النص", "img": "", "html": "<div class=\"minis\"><div class=\"mini\"><b>❄️ الشتاء</b><svg viewBox=\"0 0 230 160\" width=\"100%\" style=\"direction:ltr\"><circle cx=\"80\" cy=\"80\" r=\"60\" fill=\"#3b8fd9\" stroke=\"#1f3a68\" stroke-width=\"3\"/><line x1=\"25.0\" y1=\"56.1\" x2=\"135.0\" y2=\"56.1\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"103.9\" x2=\"135.0\" y2=\"103.9\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"103.9\" x2=\"135.0\" y2=\"103.9\" stroke=\"#2c7be5\" stroke-width=\"5\"/><text x=\"205\" y=\"115.9\" text-anchor=\"middle\" font-size=\"34\">☀️</text><line x1=\"180\" y1=\"95.9\" x2=\"141.0\" y2=\"103.9\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"103.9\" x2=\"141.0\" y2=\"103.9\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"111.9\" x2=\"141.0\" y2=\"103.9\" stroke=\"#f2a900\" stroke-width=\"3\"/><text x=\"80\" y=\"85\" text-anchor=\"middle\" font-size=\"22\">🐐</text></svg><span>على الجدي</span></div><div class=\"mini\"><b>🌸 الربيع</b><svg viewBox=\"0 0 230 160\" width=\"100%\" style=\"direction:ltr\"><circle cx=\"80\" cy=\"80\" r=\"60\" fill=\"#3b8fd9\" stroke=\"#1f3a68\" stroke-width=\"3\"/><line x1=\"25.0\" y1=\"56.1\" x2=\"135.0\" y2=\"56.1\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"103.9\" x2=\"135.0\" y2=\"103.9\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#27ae60\" stroke-width=\"5\"/><text x=\"205\" y=\"92.0\" text-anchor=\"middle\" font-size=\"34\">☀️</text><line x1=\"180\" y1=\"72.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"80.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"88.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><text x=\"80\" y=\"85\" text-anchor=\"middle\" font-size=\"22\">💨</text></svg><span>على الاستواء</span></div><div class=\"mini\"><b>☀️ الصيف</b><svg viewBox=\"0 0 230 160\" width=\"100%\" style=\"direction:ltr\"><circle cx=\"80\" cy=\"80\" r=\"60\" fill=\"#3b8fd9\" stroke=\"#1f3a68\" stroke-width=\"3\"/><line x1=\"25.0\" y1=\"56.1\" x2=\"135.0\" y2=\"56.1\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"103.9\" x2=\"135.0\" y2=\"103.9\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"56.1\" x2=\"135.0\" y2=\"56.1\" stroke=\"#f2a900\" stroke-width=\"5\"/><text x=\"205\" y=\"68.1\" text-anchor=\"middle\" font-size=\"34\">☀️</text><line x1=\"180\" y1=\"48.1\" x2=\"141.0\" y2=\"56.1\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"56.1\" x2=\"141.0\" y2=\"56.1\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"64.1\" x2=\"141.0\" y2=\"56.1\" stroke=\"#f2a900\" stroke-width=\"3\"/><text x=\"80\" y=\"85\" text-anchor=\"middle\" font-size=\"22\">🦀</text></svg><span>على السرطان</span></div><div class=\"mini\"><b>🍂 الخريف</b><svg viewBox=\"0 0 230 160\" width=\"100%\" style=\"direction:ltr\"><circle cx=\"80\" cy=\"80\" r=\"60\" fill=\"#3b8fd9\" stroke=\"#1f3a68\" stroke-width=\"3\"/><line x1=\"25.0\" y1=\"56.1\" x2=\"135.0\" y2=\"56.1\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"25.0\" y1=\"103.9\" x2=\"135.0\" y2=\"103.9\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"3 3\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"140.0\" y2=\"80.0\" stroke=\"#16a085\" stroke-width=\"5\"/><text x=\"205\" y=\"92.0\" text-anchor=\"middle\" font-size=\"34\">☀️</text><line x1=\"180\" y1=\"72.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"80.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><line x1=\"180\" y1=\"88.0\" x2=\"146.0\" y2=\"80.0\" stroke=\"#f2a900\" stroke-width=\"3\"/><text x=\"80\" y=\"85\" text-anchor=\"middle\" font-size=\"22\">🌧️</text></svg><span>على الاستواء</span></div></div>"}, {"title": "الجو في كل فصل", "emo": "🌦️", "pts": ["❄️ <b>الشتاء:</b> بارد + أمطار + تلج على جبال زي <b>سانت كاترين</b>", "🌸 <b>الربيع:</b> معتدل + <b>رياح الخماسين</b>", "☀️ <b>الصيف:</b> حار وترتفع الحرارة في الجنوب، ومعتدل على السواحل الشمالية", "🍂 <b>الخريف:</b> معتدل + أحيانًا تنزل أمطار"], "trick": "🦀 في الصيف بنشوف <b>كابوريا</b> على البحر = السرطان • 🐐 الجدي بيستخبى من <b>برد الشتا</b><br>👯 الربيع والخريف <b>توأم</b>: الاتنين على الاستواء ومعتدلين", "img": "", "html": ""}]}, {"id": "l5", "cat": "all", "name": "خريطة الروابط", "emo": "🧵", "color": "#1d4f91", "slides": [{"title": "حاجات بتتكرر (1)", "emo": "🧵", "pts": ["⛰️ <b>جبال البحر الأحمر:</b> في الصحراء الشرقية + اتكونت بسبب <b>الحركات الانكسارية</b>", "🏔️ <b>سانت كاترين:</b> أشهر جبال سيناء + عليه تلج في الشتاء + المرتفعات أبرد", "🔺 <b>المثلث:</b> سيناء شكلها مثلث + الدلتا شكلها مثلث"], "trick": "", "img": "", "html": ""}, {"title": "حاجات بتتكرر (2)", "emo": "🧵", "pts": ["🦀 <b>السرطان:</b> بيمر في جنوب مصر + الشمس عليه في الصيف", "🐐 <b>الجدي:</b> جنوب الاستواء + الشمس عليه في الشتاء", "🔴 <b>الاستواء:</b> أكبر دائرة + مصر شماله + الشمس عليه في الربيع والخريف"], "trick": "", "img": "", "html": ""}, {"title": "حاجات بتتكرر (3)", "emo": "🧵", "pts": ["⬇️ <b>المنخفضات:</b> في الصحراء الغربية + الانكسارات بتعملها + حرارتها أعلى", "💨 <b>الرياح:</b> بتعمل كثبان رملية + الخماسين + من خصائص الإقليم المناخي", "💧 <b>المياه:</b> بتعمل أودية جافة + الواحة فيها مياه + القرب منها = جو معتدل"], "trick": "اختار أي سطر واحكيه لبابا من غير ما تبص 🧠", "img": "", "html": ""}]}];
+const EXAM_LES = [{"id": "e0", "name": "الموقع الفلكي", "emo": "🌐", "color": "#8e44ad"}, {"id": "e1", "name": "مظاهر السطح", "emo": "⛰️", "color": "#e67e22"}, {"id": "e2", "name": "المناخ", "emo": "⛅", "color": "#2c7be5"}, {"id": "e3", "name": "التنوع البيولوجي", "emo": "🐪", "color": "#1e9e5a"}];
+const EXAM_HOW = {"أكمل": "اكتب <b>الكلمة الناقصة</b> بس", "ما المقصود": "اكتب التعريف وابدأ بـ <b>«وصف…»</b> أو <b>«تنوع…»</b>", "بم تفسر": "ابدأ الإجابة بكلمة <b>«بسبب…»</b>", "دلل": "ابدأ بـ <b>«حيث يوجد…»</b> واكتب <b>أسماء أمثلة</b>", "ماذا يحدث لو": "ابدأ بـ <b>«لا نستطيع…»</b> أو <b>«يتوقف…»</b>", "صحح الخطأ": "اكتب <b>الجملة كلها</b> وصلّح الكلمات الغلط", "اذكر": "اكتب النقط <b>واحدة واحدة</b> وبينهم شرطة –"};
+const EXAM = [{"les": "e0", "type": "أكمل", "emo": "🌐", "q": "الكرة اللي عليها <b>خطوط واقفة</b> (رأسية): الخطوط دي اسمها إيه؟", "easy": "الخطوط الواقفة الطويلة اللي نازلة من فوق لتحت دي اسمها خطوط الطول.", "a": "<b>خطوط الطول</b>", "t": "الطول = طويل واقف زي العمود 🧍", "id": "q1"}, {"les": "e0", "type": "اذكر", "emo": "⏰", "q": "اكتب فايدة واحدة لـ <b>خطوط الطول</b>", "easy": "بتقولنا البلد دي يمين ولا شمال (شرق ولا غرب)، وبتعرفنا الساعة كام في كل بلد.", "a": "تحديد الأماكن <b>شرقًا وغربًا</b> – ومعرفة <b>فرق التوقيت</b> بين الدول", "t": "الطول ↕️ = شرق/غرب + الساعة ⏰", "id": "q2"}, {"les": "e0", "type": "صحح الخطأ", "emo": "🔄", "q": "صحّح: «تدور الأرض <u>حول الشمس</u> مرة كل 24 ساعة من <u>الشرق إلى الغرب</u>»", "easy": "في يوم واحد (24 ساعة) الأرض بتلف حوالين نفسها زي النحلة 🌀، مش حوالين الشمس. وبتلف من الغرب للشرق.", "a": "تدور الأرض <b>حول نفسها</b> مرة كل 24 ساعة من <b>الغرب إلى الشرق</b>", "t": "حوالين نفسها = يوم 🌀 • حوالين الشمس = سنة ☀️", "id": "q3"}, {"les": "e0", "type": "ماذا يحدث لو", "emo": "❓", "q": "ماذا يحدث لو <b>مفيش خطوط طول</b>؟", "easy": "يعني نشيل فايدتها: مش هنعرف البلد شرق ولا غرب، ولا هنعرف فرق الساعة.", "a": "<b>لا نستطيع</b> تحديد الأماكن <b>شرقًا وغربًا</b> – ولا نعرف <b>فرق التوقيت</b>", "t": "«ماذا يحدث» = الفايدة بالعكس 🔄", "id": "q4"}, {"les": "e0", "type": "اذكر", "emo": "🦀", "q": "اكتب <b>دوائر العرض الرئيسية</b> (الخطوط النايمة على الكورة)", "easy": "دول 5 خطوط نايمة: واحد في النص، واتنين جنبه، واتنين بعيد عند التلج.", "a": "<b>خط الاستواء</b> – <b>مدار السرطان</b> – <b>مدار الجدي</b> – <b>الدائرة القطبية الشمالية</b> – <b>الدائرة القطبية الجنوبية</b>", "t": "من فوق لتحت: ❄️ قطبية – 🦀 سرطان – 🔴 استواء – 🐐 جدي – 🐧 قطبية", "id": "q5"}, {"les": "e0", "type": "اذكر", "emo": "🧭", "q": "اكتب فايدة واحدة لـ <b>دوائر العرض</b>", "easy": "بتقولنا البلد فوق ولا تحت (شمال ولا جنوب)، وبتعرفنا الجو هناك حر ولا برد.", "a": "تحديد الأماكن <b>شمالًا وجنوبًا</b> – ودراسة <b>المناخ</b> (الحرارة والرياح والمطر)", "t": "العرض ↔️ = شمال/جنوب + الجو ☀️❄️", "id": "q6"}, {"les": "e0", "type": "صحح الخطأ", "emo": "✏️", "q": "صحّح: «دوائر العرض دوائر أفقية <u>متساوية</u> الطول وعددها <u>360</u> دائرة»", "easy": "الدواير مش قد بعض: الاستواء أكبر واحدة وبيصغروا ناحية التلج. وعددهم 180 بس (الـ 360 دي بتاعة خطوط الطول).", "a": "دوائر العرض دوائر أفقية <b>غير متساوية</b> الطول وعددها <b>180</b> دائرة", "t": "العرض 180 • الطول 360 (الطول أطول 😉)", "id": "q7"}, {"les": "e0", "type": "ماذا يحدث لو", "emo": "❓", "q": "ماذا يحدث لو <b>مفيش دوائر عرض</b>؟", "easy": "نشيل فايدتها: مش هنعرف البلد شمال ولا جنوب، ولا هنعرف الجو.", "a": "<b>لا نستطيع</b> تحديد الأماكن <b>شمالًا وجنوبًا</b> – ولا دراسة <b>المناخ</b>", "t": "«ماذا يحدث» = الفايدة بالعكس 🔄", "id": "q8"}, {"les": "e1", "type": "أكمل", "emo": "🐐", "q": "من أشهر الهضاب <b>شمال الصحراء الشرقية</b> هضبة ……", "easy": "الهضبة دي أرض عالية ومسطحة فوق في شمال الصحراء الشرقية، واسمها شبه «المعزة».", "a": "هضبة <b>المعازة</b>", "t": "المِعزة طالعة فوق في <b>الشمال</b> 🐐⬆️", "id": "q9"}, {"les": "e1", "type": "أكمل", "emo": "🤵", "q": "اكتب مثال لـ <b>وادي جاف في سيناء</b>", "easy": "وادي كان فيه مية زمان ونشف، وبيعدّي في نص سيناء، واسمه شبه «العريس».", "a": "<b>وادي العريش</b>", "t": "العريس بيعدّي من نص سيناء 🤵", "id": "q10"}, {"les": "e1", "type": "بم تفسر", "emo": "💰", "q": "ليه <b>الصحراء الشرقية مهمة للاقتصاد</b>؟", "easy": "عشان فيها كنز: دهب ومعادن، وبترول وغاز بنشغّل بيهم العربيات والبوتاجاز.", "a": "<b>بسبب</b> إنها غنية بالمعادن مثل <b>الذهب</b> وفيها <b>بترول وغاز طبيعي</b>", "t": "خزنة كنز 💰 = ذهب + بترول + غاز", "id": "q11"}, {"les": "e1", "type": "دلل", "emo": "🔺", "q": "دلّل: <b>سيناء فيها مظاهر سطح كتير</b> (متنوعة)", "easy": "تخيّل إنك ماشي في سيناء من تحت لفوق: تحت جبال عالية ⛰️، في النص هضبة اسمها التيه ووادي العريش، وفوق سهول جنب البحر وجبل الحلال 🏖️.", "a": "<b>حيث يوجد</b> فيها: <b>جبال في الجنوب</b> مثل موسى وسانت كاترين – <b>هضبة التيه في الوسط</b> ووادي العريش – <b>سهول في الشمال</b> وجبل الحلال", "t": "تحت ⛰️ جبال • نص 😵 التيه (اللي يتوه في النص) • فوق 🏖️ سهول", "id": "q12"}, {"les": "e1", "type": "اذكر", "emo": "🗻", "q": "اكتب <b>3</b> من مظاهر السطح في سيناء", "easy": "هات حاجة من كل نوع: وادي، وهضبة، وجبل.", "a": "<b>وادي العريش</b> – <b>هضبة التيه</b> – <b>جبل سانت كاترين</b>", "t": "وادي 🤵 + هضبة 😵 + جبل ⛰️", "id": "q13"}, {"les": "e1", "type": "أكمل", "emo": "👵", "q": "أعلى جبل في <b>جبال البحر الأحمر</b> اسمه جبل ……", "easy": "أعلى قمة هناك، عالية أوي لدرجة إن اللي يطلعها شعره يشيب!", "a": "جبل <b>شايب البنات</b>", "t": "البنات <b>شابوا</b> وهما طالعين 👵⛰️", "id": "q14"}, {"les": "e1", "type": "اذكر", "emo": "💧", "q": "إيه فايدة <b>وادي قنا</b>؟", "easy": "بنطلّع منه مية من تحت الأرض، وبنخزّن فيه مية المطر الجامد (السيول).", "a": "استخراج <b>المياه الجوفية</b> – وتخزين <b>مياه السيول</b>", "t": "قنا = <b>قناة مية</b> 💧", "id": "q15"}, {"les": "e1", "type": "بم تفسر", "emo": "🌊", "q": "ليه <b>اتكوّن وادي النيل</b>؟", "easy": "المية فضلت تجري سنين طويلة وتشيل من الأرض حتة حتة لحد ما حفرت الوادي. الشيل ده اسمه «تعرية»، ولأنه بالمية اسمه «تعرية مائية».", "a": "<b>بسبب التعرية المائية</b>", "t": "تعرية = المية <b>بتعرّي</b> الأرض: بتشيل غطاها حتة حتة لحد ما تحفرها 💧⛏️", "id": "q16"}, {"les": "e1", "type": "دلل", "emo": "⛰️", "q": "دلّل: <b>الصحراء الشرقية جبلية وهضبية</b>", "easy": "يعني فيها جبال وفيها هضاب. هات أمثلة لكل واحدة.", "a": "<b>حيث يوجد</b> فيها <b>جبال</b> مثل جبال البحر الأحمر – و<b>هضاب</b> مثل <b>العبايدة والمعازة</b>", "t": "هضاب الشرقية: العبايدة والمعازة 🐐", "id": "q17"}, {"les": "e1", "type": "أكمل", "emo": "🤵", "q": "إيه العامل اللي شكّل <b>وادي العريش</b>؟", "easy": "زي وادي النيل بالظبط: المية هي اللي حفرته، وده اسمه «تعرية مائية».", "a": "<b>التعرية المائية</b>", "t": "أي <b>وادي</b> = <b>تعرية مائية</b> 💧 — المية <b>بتعرّي</b> الأرض وتحفرها ⛏️", "id": "q18"}, {"les": "e1", "type": "أكمل", "emo": "✅", "q": "من أشهر الجبال <b>شمال سيناء</b> جبل ……", "easy": "جبل فوق في شمال سيناء، اسمه عكس كلمة «حرام».", "a": "جبل <b>الحلال</b>", "t": "الحلال فوق في <b>الشمال</b> ⬆️", "id": "q19"}, {"les": "e1", "type": "اذكر", "emo": "💧", "q": "إيه اللي <b>المية عملته في سطح مصر</b> (أثر التعرية المائية)؟", "easy": "«التعرية المائية» يعني المية وهي بتحفر الأرض. حفرت حاجتين: وادي النيل، والوديان الناشفة.", "a": "شكّلت <b>وادي النيل</b> – و<b>الأودية الجافة</b>", "t": "تعرية = المية <b>بتعرّي</b> الأرض: بتشيل غطاها حتة حتة لحد ما تحفرها 💧⛏️", "id": "q20"}, {"les": "e1", "type": "بم تفسر", "emo": "⚡", "q": "ليه <b>اتكوّنت جبال البحر الأحمر</b>؟", "easy": "الأرض هناك اتكسرت واتحركت، فحتت منها طلعت لفوق وبقت جبال.", "a": "<b>بسبب الحركات الانكسارية</b>", "t": "البحر الأحمر ← الأرض <b>اتكسرت</b> ⚡", "id": "q21"}, {"les": "e1", "type": "دلل", "emo": "🏔️", "q": "دلّل: <b>سيناء أغلبها جبال</b>", "easy": "فيها جبال تحت (في الجنوب) وجبال فوق (في الشمال).", "a": "<b>حيث يوجد</b> فيها <b>جبال في الجنوب</b> مثل موسى وسانت كاترين – و<b>في الشمال</b> مثل جبل الحلال", "t": "", "id": "q22"}, {"les": "e1", "type": "أكمل", "emo": "⚡", "q": "إيه العامل اللي شكّل <b>جبال البحر الأحمر</b>؟", "easy": "الأرض اتكسرت ⚡", "a": "<b>الحركات الانكسارية</b>", "t": "وادي = مية 💧 • جبال البحر الأحمر = كسر ⚡", "id": "q23"}, {"les": "e2", "type": "أكمل", "emo": "🧒❄️", "q": "صورة ولد لابس جاكيت وطاقية والتلج حواليه: ده فصل ……", "easy": "تلج وبرد وجاكيت = الشتا.", "a": "فصل <b>الشتاء</b>", "t": "", "id": "q24"}, {"les": "e2", "type": "أكمل", "emo": "📅", "q": "فصل الشتاء بيبدأ يوم ……", "easy": "يوم 21 في شهر الكريسماس 🎄", "a": "<b>21 ديسمبر</b>", "t": "الفصول بتبدأ يوم <b>21</b> • الشتا = ديسمبر 🎄", "id": "q25"}, {"les": "e2", "type": "ما المقصود", "emo": "🌦️", "q": "يعني إيه <b>الطقس</b>؟", "easy": "الجو في وقت قصير: النهارده، أو الأسبوع ده، أو الشهر ده. زي ما المذيع بيقول «الطقس النهارده حر» 📺", "a": "<b>وصف</b> حالة الجو في فترة <b>قصيرة</b>: <b>يوم أو أسبوع أو شهر</b>", "t": "طقس = كلمة قصيرة = وقت قصير ⏱️", "id": "q26"}, {"les": "e2", "type": "بم تفسر", "emo": "🏔️", "q": "ليه <b>بينزل تلج على جبل سانت كاترين في الشتا</b>؟", "easy": "كل ما نطلع فوق الجبل الجو بيبرد أكتر، فالمية بتتجمد وتبقى تلج.", "a": "<b>بسبب انخفاض درجة الحرارة فوق المرتفعات</b>", "t": "فوق الجبل = برد 🧥", "id": "q27"}, {"les": "e2", "type": "ماذا يحدث لو", "emo": "🌗", "q": "ماذا يحدث لو <b>الأرض وقفت ومبقتش تلف حوالين نفسها</b>؟", "easy": "الأرض وهي بتلف بيجي الصبح ويجي الليل. لو وقفت، حتة هتفضل صبح على طول وحتة ليل على طول.", "a": "<b>يتوقف تعاقب الليل والنهار</b>", "t": "تلف حوالين نفسها = صبح وليل 🌞🌙", "id": "q28"}, {"les": "e2", "type": "أكمل", "emo": "🧒☀️", "q": "صورة ولد بيلعب في المية والشمس جامدة: ده فصل ……", "easy": "شمس وحر ومية = الصيف.", "a": "فصل <b>الصيف</b>", "t": "", "id": "q29"}, {"les": "e2", "type": "أكمل", "emo": "📅", "q": "فصل الصيف بيبدأ يوم ……", "easy": "يوم 21 في شهر الأجازة والبحر 🏖️", "a": "<b>21 يونيو</b>", "t": "الصيف = يونيو = يوم البحر 🏖️", "id": "q30"}, {"les": "e2", "type": "ما المقصود", "emo": "🌍", "q": "يعني إيه <b>المناخ</b>؟", "easy": "الجو في وقت طويل: فصل كامل أو سنة كاملة. زي «مصر حر في الصيف».", "a": "<b>وصف</b> حالة الجو في فترة <b>طويلة</b>: <b>فصل أو سنة</b>", "t": "مُناخ = كلمة أطول = وقت أطول 📅", "id": "q31"}, {"les": "e2", "type": "بم تفسر", "emo": "🗺️", "q": "ليه <b>الجو في مصر مختلف</b> من مكان لمكان ومن وقت لوقت؟", "easy": "من مكان لمكان: عشان كل حتة ليها إقليم مختلف (البحر غير الصحرا). ومن وقت لوقت: عشان الفصول (شتا وصيف…).", "a": "<b>بسبب اختلاف الأقاليم المناخية والفصول المناخية</b>", "t": "مكان ← أقاليم 🗺️ • وقت ← فصول 📅", "id": "q32"}, {"les": "e3", "type": "أكمل", "emo": "🐪", "q": "الجمل اللي في الصورة عايش في ……", "easy": "الجمل بيعيش في الصحرا عندنا في مصر.", "a": "<b>الصحاري المصرية</b>", "t": "", "id": "q33"}, {"les": "e3", "type": "أكمل", "emo": "🌴", "q": "من النباتات اللي بتطلع في المكان اللي عايش فيه الجمل ……", "easy": "الشجرة اللي بتطلّع البلح 🌴", "a": "<b>النخيل</b>", "t": "", "id": "q34"}, {"les": "e3", "type": "ما المقصود", "emo": "🦋", "q": "يعني إيه <b>التنوع البيولوجي</b>؟", "easy": "يعني إن في الدنيا أنواع كتير أوي من النباتات والحيوانات.", "a": "<b>تنوع</b> الحياة <b>النباتية والحيوانية</b> على <b>كوكب الأرض</b>", "t": "بيولوجي = حياة 🌿🐾", "id": "q35"}, {"les": "e3", "type": "دلل", "emo": "🐪", "q": "دلّل: <b>الجمل بيتأقلم كويس</b> مع الصحرا", "easy": "الجمل يقدر يستحمل أيام من غير أكل ولا مية.", "a": "<b>حيث إنه</b> يتحمل <b>الجوع والعطش</b>", "t": "", "id": "q36"}, {"les": "e3", "type": "دلل", "emo": "🏞️", "q": "أثبت: <b>الدولة بتحمي النباتات والحيوانات</b>", "easy": "الدولة عملت 3 حاجات: قوانين تمنع الصيد الكتير، وبتعرّف الناس أهمية الحيوانات والنباتات، وعملت محميات (أماكن محمية ليهم).", "a": "<b>إصدار قوانين</b> تمنع الرعي والصيد الجائر – <b>نشر الوعي</b> بأهمية التنوع البيولوجي – <b>إنشاء المحميات الطبيعية</b>", "t": "«<b>ق و م</b>» = قوانين – وعي – محميات 🛡️", "id": "q37"}];
+const EXAM_GROUPS = [{"id": "gS", "name": "سيناء كلها", "emo": "🔺", "color": "#8e44ad", "map": "<div class=\"gmap sinai\">\n <div class=\"band\" style=\"width:100%;background:#d9f1ff\">⬆️ <b>الشمال:</b> 🏖️ سهول ساحلية + جبل <b>الحلال</b> ✅</div>\n <div class=\"band\" style=\"width:84%;background:#fdebc8\">↔️ <b>الوسط:</b> 😵 هضبة <b>التيه</b> + 🤵 وادي <b>العريش</b><br><small>وادي جاف اتعمل بـ <b>التعرية المائية</b> 💧</small></div>\n <div class=\"band\" style=\"width:66%;background:#f6d6c2\">⬇️ <b>الجنوب:</b> ⛰️ جبل <b>موسى</b> + جبل <b>سانت كاترين</b><br><small>عالي ← بارد ← تلج في الشتا ❄️</small></div>\n <div class=\"gcap\">🔺 سيناء مثلث مقلوب: فوق عريض وتحت مدبّب</div>\n</div>", "trick": "امشي في سيناء من تحت لفوق: <b>جبال</b> ⛰️ ← <b>هضبة ووادي</b> 😵🤵 ← <b>سهول وجبل الحلال</b> 🏖️", "qs": ["q12", "q19", "q10", "q18", "q13", "q22", "q27"], "notes": {"q12": "🧵 ده <b>السؤال الكبير</b>: لو حفظته، هتعرف تجاوب كل أسئلة سيناء التانية منه!", "q19": "🧵 جاي من السطر الأول في السؤال الكبير: <b>الشمال</b> = سهول + الحلال", "q10": "🧵 جاي من السطر التاني: <b>الوسط</b> = التيه + وادي العريش", "q18": "🧵 وادي العريش = <b>وادي</b> ← وأي وادي = <b>تعرية مائية</b> 💧", "q13": "🧵 خد واحدة من كل سطر: وادي (العريش) + هضبة (التيه) + جبل (سانت كاترين)", "q22": "🧵 هي هي إجابة السؤال الكبير بس <b>الجبال بس</b>: الجنوب (موسى وكاترين) + الشمال (الحلال)", "q27": "🧵 سانت كاترين في <b>الجنوب</b> وهو جبل عالي ← فوق الجبل برد ← تلج ❄️"}}, {"id": "gE", "name": "الصحراء الشرقية كلها", "emo": "⛰️", "color": "#c0392b", "map": "<div class=\"gmap east\" dir=\"ltr\">\n <div class=\"strip nile\">🌊<br>النيل<br><small>غرب</small></div>\n <div class=\"desert\" dir=\"rtl\">\n  <div class=\"cell\">⬆️ <b>الشمال:</b> 🐐 هضبة <b>المعازة</b></div>\n  <div class=\"cell\">🏞️ <b>هضاب:</b> المعازة + العبايدة</div>\n  <div class=\"cell\">💧 وادي <b>قنا</b>: مياه جوفية + تخزين السيول</div>\n  <div class=\"cell\">💰 <b>كنز:</b> ذهب + بترول + غاز</div>\n </div>\n <div class=\"strip mts\" dir=\"rtl\">⛰️ <b>جبال البحر الأحمر</b><br>👵 أعلى قمة: <b>شايب البنات</b><br>⚡ اتكونت بـ <b>الحركات الانكسارية</b></div>\n <div class=\"strip sea\">🌊<br>البحر<br>الأحمر<br><small>شرق</small></div>\n</div>", "trick": "الشرقية = <b>جبال</b> (البحر الأحمر) + <b>هضاب</b> (المعازة والعبايدة) + <b>وادي</b> (قنا) + <b>كنز</b> (ذهب وبترول وغاز)", "qs": ["q17", "q9", "q14", "q21", "q23", "q15", "q11"], "notes": {"q17": "🧵 ده <b>السؤال الكبير</b>: جبال + هضاب. كل أسئلة الشرقية التانية تفاصيل منه", "q9": "🧵 المعازة واحدة من هضاب السؤال الكبير — وهي اللي في <b>الشمال</b> 🐐", "q14": "🧵 الجبال اللي في السؤال الكبير = جبال البحر الأحمر ← أعلاها <b>شايب البنات</b> 👵", "q21": "🧵 نفس الجبال: الأرض <b>اتكسرت</b> ⚡ فطلعت جبال", "q23": "🧵 هي هي إجابة السؤال اللي قبله: <b>الحركات الانكسارية</b>", "q15": "🧵 وادي في الشرقية… فايدته: <b>مية</b> (جوفية + سيول) 💧", "q11": "🧵 الكنز اللي في الشرقية: ذهب + بترول + غاز 💰"}}];
+const MAP_REGIONS = [{"id": "west", "name": "الصحراء الغربية", "emo": "🐪", "color": "#f2b632", "fill": "#ffe08a", "pts": "20,42 172,42 222,150 202,250 217,330 212,402 20,402", "box": [10, 30, 225, 380], "facts": ["<b>أكبر</b> وحدة تضاريسية في مصر", "فيها <b>منخفضات وواحات</b>", "أكبر منخفض: <b>القطارة</b> (نادر السكان)", "5 منخفضات فيها ناس: <b>الداخلة – الخارجة – البحرية – سيوة – الفرافرة</b>"], "trick": "«<b>دَخَل</b> و<b>خَرَج</b> و<b>بَحَّر</b> لـ<b>سيوة</b> وهو <b>فرفور</b>» 😄 — دوس على كل علامة وقول الجملة", "exam": [], "cards": [2, 3, 4, 5]}, {"id": "east", "name": "الصحراء الشرقية", "emo": "⛰️", "color": "#d35400", "fill": "#ffc29a", "pts": "242,150 262,96 284,118 300,160 330,212 360,300 386,402 238,402 242,330 226,250", "box": [215, 85, 180, 325], "facts": ["بين <b>النيل</b> و<b>البحر الأحمر</b>", "صحراء <b>جبلية هضبية</b>: جبال + هضاب", "غنية بـ <b>الذهب</b> و<b>البترول والغاز</b>"], "trick": "الشرقية = <b>جبال</b> ⛰️ + <b>هضاب</b> 🐐 + <b>وادي</b> 💧 + <b>كنز</b> 💰", "exam": ["q17"], "cards": [8]}, {"id": "sinai", "name": "شبه جزيرة سيناء", "emo": "🔺", "color": "#8e44ad", "fill": "#e2c4f2", "pts": "290,46 370,40 381,100 341,196 302,142 288,112", "box": [278, 30, 115, 180], "facts": ["في <b>شرق</b> مصر، شكلها <b>مثلث</b>", "<b>الشمال:</b> سهول ساحلية + جبل الحلال", "<b>الوسط:</b> هضبة التيه + وادي العريش", "<b>الجنوب:</b> جبل موسى + سانت كاترين"], "trick": "امشي من تحت لفوق: <b>جبال</b> ⛰️ ← <b>هضبة ووادي</b> 😵🤵 ← <b>سهول والحلال</b> 🏖️", "exam": ["q12", "q22"], "cards": [12, 14]}, {"id": "nile", "name": "وادي النيل والدلتا", "emo": "🌿", "color": "#1e9e5a", "fill": "#a9e6b8", "pts": "222,150 202,250 217,330 212,402 238,402 242,330 226,250 242,150 272,42 170,42", "box": [150, 30, 130, 380], "facts": ["<b>وادي النيل:</b> الأرض على جانبي النيل، فيها <b>زراعة</b>", "من <b>الحدود الجنوبية</b> لحد <b>القاهرة</b>", "<b>الدلتا:</b> مثلث، من أهم مناطق الزراعة", "النيل بيجري من <b>الجنوب للشمال</b> ⬆️"], "trick": "النيل <b>وردة</b> 🌷: الساق = الوادي، والوردة = الدلتا", "exam": ["q20"], "cards": [17]}];
+const MAP_SPOTS = [{"id": "qattara", "r": "west", "x": 135, "y": 82, "emo": "🚂", "name": "منخفض القطارة", "info": "<b>أكبر</b> المنخفضات — بس <b>نادر</b> وجود السكان", "trick": "قطر كبير بس فاضي مفيهوش ركاب 🚂", "exam": [], "cards": [6]}, {"id": "siwa", "r": "west", "x": 58, "y": 98, "emo": "🏝️", "name": "منخفض سيوة", "info": "منخفض <b>مأهول بالسكان</b> — في الغرب جنب ليبيا", "trick": "«…لـ<b>سيوة</b>…»", "exam": [], "cards": [7]}, {"id": "bahariya", "r": "west", "x": 160, "y": 150, "emo": "⛵", "name": "منخفض البحرية", "info": "منخفض <b>مأهول بالسكان</b>", "trick": "«…و<b>بَحَّر</b>…» ⛵", "exam": [], "cards": [7]}, {"id": "farafra", "r": "west", "x": 105, "y": 190, "emo": "😄", "name": "منخفض الفرافرة", "info": "منخفض <b>مأهول بالسكان</b>", "trick": "«…وهو <b>فرفور</b>» 😄", "exam": [], "cards": [7]}, {"id": "dakhla", "r": "west", "x": 112, "y": 270, "emo": "🚪", "name": "منخفض الداخلة", "info": "منخفض <b>مأهول بالسكان</b>", "trick": "«<b>دَخَل</b>…» 🚪", "exam": [], "cards": [7]}, {"id": "kharga", "r": "west", "x": 178, "y": 278, "emo": "🚶", "name": "منخفض الخارجة", "info": "منخفض <b>مأهول بالسكان</b> — جنب الداخلة", "trick": "«…و<b>خَرَج</b>…» 🚶 — الداخلة والخارجة جيران", "exam": [], "cards": [7]}, {"id": "maaza", "r": "east", "x": 272, "y": 172, "emo": "🐐", "name": "هضبة المعازة", "info": "من أشهر الهضاب — في <b>شمال</b> الصحراء الشرقية", "trick": "المِعزة طالعة فوق في الشمال 🐐⬆️", "exam": ["q9", "q17"], "cards": []}, {"id": "qena", "r": "east", "x": 262, "y": 238, "emo": "💧", "name": "وادي قنا", "info": "فايدته: استخراج <b>المياه الجوفية</b> وتخزين <b>مياه السيول</b>", "trick": "قنا = قناة مية 💧", "exam": ["q15"], "cards": []}, {"id": "ababda", "r": "east", "x": 272, "y": 335, "emo": "🏞️", "name": "هضبة العبايدة", "info": "من هضاب الصحراء الشرقية (مع المعازة)", "trick": "هضاب الشرقية: المعازة 🐐 والعبايدة 🏞️", "exam": ["q17"], "cards": []}, {"id": "redmts", "r": "east", "x": 330, "y": 272, "emo": "⛰️", "name": "جبال البحر الأحمر", "info": "أشهر جبال الشرقية — اتكونت بسبب <b>الحركات الانكسارية</b> ⚡", "trick": "الأرض <b>اتكسرت</b> فطلعت جبال ⚡", "exam": ["q21", "q23", "q17"], "cards": [9]}, {"id": "shayeb", "r": "east", "x": 312, "y": 214, "emo": "👵", "name": "جبل شايب البنات", "info": "<b>أعلى قمة</b> في جبال البحر الأحمر", "trick": "البنات شابوا وهما طالعين 👵", "exam": ["q14"], "cards": []}, {"id": "treasure", "r": "east", "x": 300, "y": 312, "emo": "💰", "name": "الكنز", "info": "معادن: <b>ذهب – نحاس – حديد</b> • طاقة: <b>بترول – غاز طبيعي</b>", "trick": "«ذهبت أنحت حديد» + بترول وغاز", "exam": ["q11"], "cards": [10, 11]}, {"id": "plains", "r": "sinai", "x": 312, "y": 56, "emo": "🏖️", "name": "السهول الساحلية", "info": "في <b>شمال</b> سيناء على البحر المتوسط", "trick": "فوق = بحر = سهول 🏖️", "exam": ["q12"], "cards": []}, {"id": "halal", "r": "sinai", "x": 345, "y": 66, "emo": "✅", "name": "جبل الحلال", "info": "من أشهر الجبال في <b>شمال</b> سيناء", "trick": "الحلال فوق في الشمال ⬆️ (عكس حرام)", "exam": ["q19", "q22"], "cards": []}, {"id": "arish", "r": "sinai", "x": 348, "y": 98, "emo": "🤵", "name": "وادي العريش", "info": "<b>وادي جاف</b> في <b>وسط</b> سيناء — اتعمل بـ <b>التعرية المائية</b> 💧", "trick": "العريس بيعدّي من نص سيناء 🤵", "exam": ["q10", "q18", "q13"], "cards": []}, {"id": "teeh", "r": "sinai", "x": 318, "y": 120, "emo": "😵", "name": "هضبة التيه", "info": "هضبة في <b>وسط</b> سيناء", "trick": "اللي يتوه يتوه في النص 😵", "exam": ["q13", "q12"], "cards": []}, {"id": "catherine", "r": "sinai", "x": 342, "y": 160, "emo": "❄️", "name": "جبل سانت كاترين", "info": "أشهر جبال سيناء في <b>الجنوب</b> — بينزل عليه <b>تلج في الشتا</b> لأن الحرارة بتقل فوق المرتفعات", "trick": "عالي ← برد ← تلج ❄️", "exam": ["q27", "q13", "q22"], "cards": [13]}, {"id": "moses", "r": "sinai", "x": 322, "y": 150, "emo": "⛰️", "name": "جبل موسى", "info": "من جبال <b>جنوب</b> سيناء", "trick": "تحت في الجنوب: موسى وكاترين جيران", "exam": ["q22", "q12"], "cards": []}, {"id": "delta", "r": "nile", "x": 222, "y": 85, "emo": "🔺", "name": "الدلتا", "info": "شكلها <b>مثلث</b> — من <b>أهم مناطق الزراعة</b>", "trick": "مثلث زي سيناء 🔺🔺", "exam": [], "cards": [16]}, {"id": "cairo", "r": "nile", "x": 232, "y": 152, "emo": "⭐", "name": "القاهرة", "info": "وادي النيل بيوصل <b>لحد القاهرة</b> — ومن هنا تبدأ الدلتا", "trick": "القاهرة = مكان ما الساق بتفتح وردة 🌷", "exam": [], "cards": [15]}, {"id": "valley", "r": "nile", "x": 222, "y": 300, "emo": "🌾", "name": "وادي النيل", "info": "الأرض على <b>جانبي</b> النيل وفيها <b>زراعة</b> — اتكوّن بسبب <b>التعرية المائية</b> 💧", "trick": "أي وادي = المية حفرته 💧", "exam": ["q16", "q20"], "cards": [15]}, {"id": "camel", "r": "west", "x": 95, "y": 335, "emo": "🐪", "name": "الجمل", "info": "بيعيش في <b>الصحاري المصرية</b> — بيتحمل <b>الجوع والعطش</b>، وده مثال على <b>التنوع البيولوجي</b>", "trick": "الجمل يستحمل أيام من غير أكل ولا مية 🐪", "exam": ["q33", "q36", "q35"], "cards": []}, {"id": "palm", "r": "west", "x": 40, "y": 250, "emo": "🌴", "name": "النخيل", "info": "من النباتات الطبيعية اللي بتنمو في بيئة الجمل (الصحرا والواحات)", "trick": "شجرة البلح 🌴 جنب الجمل 🐪", "exam": ["q34"], "cards": []}, {"id": "reserve", "r": "west", "x": 150, "y": 365, "emo": "🛡️", "name": "المحميات الطبيعية", "info": "الدولة بتحمي النباتات والحيوانات: <b>قوانين – وعي – محميات</b>", "trick": "«ق و م» = قوانين، وعي، محميات 🛡️", "exam": ["q37", "q35"], "cards": []}];
+const GLOBE_SPOTS = [{"id": "lats", "r": "globe", "x": 40, "y": 40, "emo": "↔️", "name": "دوائر العرض", "info": "خطوط <b>أفقية</b> (نايمة) — <b>غير متساوية</b> الطول — عددها <b>180</b> — بتحدد <b>شمال/جنوب</b> وبتساعد في دراسة <b>المناخ</b>", "trick": "العرض عريض نايم زي الحزام 👖", "exam": ["q5", "q6", "q7", "q8"], "cards": [26, 34, 35], "lab": "start"}, {"id": "longs", "r": "globe", "x": 40, "y": 440, "emo": "↕️", "name": "خطوط الطول", "info": "خطوط <b>رأسية</b> (واقفة) من القطب للقطب — عددها <b>360</b> — بتحدد <b>شرق/غرب</b> و<b>فرق التوقيت</b>", "trick": "الطول طويل واقف زي العمود 🧍 — والطول أطول فعدده أكتر", "exam": ["q1", "q2", "q4"], "cards": [27, 36, 37, 40], "lab": "start"}, {"id": "greenwich", "r": "globe", "x": 320, "y": 425, "emo": "🕰️", "name": "خط جرينتش 0°", "info": "<b>أهم</b> خط طول — كل خطوط الطول بتتحسب منه — كل <b>15°</b> = <b>ساعة</b>", "trick": "15 × 4 دقايق = 60 دقيقة ⏰", "exam": [], "cards": [29, 37], "lab": "start"}, {"id": "polarN", "r": "globe", "x": 397.8, "y": 102.4, "emo": "❄️", "name": "الدائرة القطبية الشمالية 66.5°", "info": "دائرة عرض رئيسية عند <b>66.5° شمالًا</b> — أختها التوأم في الجنوب", "trick": "23.5 + 66.5 = 90 🤯", "exam": ["q5"], "cards": [32, 33], "lab": "line", "short": "القطبية الشمالية 66.5°", "lx": 268.2}, {"id": "cancer", "r": "globe", "x": 475.6, "y": 180.2, "emo": "🦀", "name": "مدار السرطان 23.5° شمال", "info": "بيمر في <b>جنوب مصر</b> — الشمس عمودية عليه في <b>الصيف</b>", "trick": "الكابوريا طالعة شمال لمصر وبتحب الصيف 🦀🏖️", "exam": ["q5"], "cards": [30], "lab": "line", "short": "مدار السرطان 23.5°", "lx": 190.4}, {"id": "equator", "r": "globe", "x": 488.0, "y": 240.0, "emo": "🔴", "name": "خط الاستواء 0°", "info": "<b>أهم</b> دائرة عرض و<b>أكبرها</b> — في النص — مصر <b>شماله</b>", "trick": "الحزام اللي في نص الكورة 🔴", "exam": ["q5"], "cards": [28], "lab": "line", "short": "خط الاستواء 0°", "lx": 178.0}, {"id": "capricorn", "r": "globe", "x": 475.6, "y": 299.8, "emo": "🐐", "name": "مدار الجدي 23.5° جنوب", "info": "دائرة عرض رئيسية عند <b>23.5° جنوبًا</b> — الشمس عمودية عليه في <b>الشتاء</b>", "trick": "«الجـدي» و«جـنوب» الاتنين بـ «ج» 🐐", "exam": ["q5"], "cards": [31], "lab": "line", "short": "مدار الجدي 23.5°", "lx": 190.4}, {"id": "polarS", "r": "globe", "x": 397.8, "y": 377.6, "emo": "🐧", "name": "الدائرة القطبية الجنوبية 66.5°", "info": "دائرة عرض رئيسية عند <b>66.5° جنوبًا</b>", "trick": "البطريق تحت في الجنوب 🐧", "exam": ["q5"], "cards": [32], "lab": "line", "short": "القطبية الجنوبية 66.5°", "lx": 268.2}, {"id": "egypt", "r": "globe", "x": 386.8, "y": 165.9, "emo": "🇪🇬", "name": "مصر على الكورة", "info": "<b>الموقع الفلكي</b>: مصر <b>شمال</b> خط الاستواء و<b>شرق</b> خط جرينتش، ومدار السرطان بيمر في جنوبها", "trick": "مصر «ش ش» 😎", "exam": [], "cards": [38, 39], "lab": "top"}, {"id": "spin", "r": "globe", "x": 190, "y": 50, "emo": "🌀", "name": "الأرض بتلف حوالين نفسها", "info": "مرة كل <b>24 ساعة</b> من <b>الغرب للشرق</b> ← وده اللي بيعمل <b>الليل والنهار</b> 🌞🌙", "trick": "حوالين نفسها = يوم 🌀 • حوالين الشمس = سنة ☀️", "exam": ["q3", "q28"], "cards": [], "lab": "top"}, {"id": "sun", "r": "globe", "x": 575, "y": 60, "emo": "☀️", "name": "الأرض حوالين الشمس", "info": "<b>الدورة السنوية</b>: الأرض بتلف حوالين الشمس مرة كل <b>365 يوم وربع</b> ← وده اللي بيعمل <b>الفصول</b>", "trick": "سنة = لفة حوالين الشمس ☀️", "exam": [], "cards": [48, 50], "lab": "below"}, {"id": "winter", "r": "globe", "x": 565, "y": 299.8, "emo": "⛄", "name": "الشتاء", "info": "بيبدأ <b>21 ديسمبر</b> — الشمس على <b>مدار الجدي</b> — بارد وأمطار وتلج على سانت كاترين", "trick": "شتا = ديسمبر 🎄 = الجدي 🐐", "exam": ["q24", "q25", "q27"], "cards": [51], "lab": "start"}, {"id": "spring", "r": "globe", "x": 565, "y": 222.0, "emo": "🌸", "name": "الربيع", "info": "الشمس على <b>خط الاستواء</b> — معتدل + <b>رياح الخماسين</b> 😷", "trick": "توأم الخريف 👯", "exam": [], "cards": [52, 49], "lab": "start"}, {"id": "summer", "r": "globe", "x": 565, "y": 180.2, "emo": "🏖️", "name": "الصيف", "info": "بيبدأ <b>21 يونيو</b> — الشمس على <b>مدار السرطان</b> — حار في الجنوب ومعتدل على السواحل", "trick": "صيف = يونيو = البحر والكابوريا 🦀🏖️", "exam": ["q29", "q30"], "cards": [53], "lab": "start"}, {"id": "autumn", "r": "globe", "x": 565, "y": 258.0, "emo": "🍂", "name": "الخريف", "info": "الشمس على <b>خط الاستواء</b> — معتدل وأحيانًا مطر", "trick": "توأم الربيع 👯", "exam": [], "cards": [54], "lab": "start"}, {"id": "weather", "r": "globe", "x": 60, "y": 240, "emo": "🌦️", "name": "الطقس والمناخ", "info": "<b>الطقس</b> = الجو في وقت <b>قصير</b> (يوم/أسبوع/شهر) • <b>المناخ</b> = الجو في وقت <b>طويل</b> (فصل/سنة)", "trick": "«الطقس النهارده» 📺 قصير • «مناخ مصر» طويل", "exam": ["q26", "q31", "q32"], "cards": [43, 46, 47], "lab": "below"}];
+const GLOBE = {"cx": 320, "cy": 240, "r": 150, "land": ["M279.1,186.2 L279.6,208.8 L299.2,226.9 L333.0,229.5 L343.4,229.5 L346.0,245.2 L353.0,271.2 L349.7,286.4 L354.6,308.1 L358.4,323.9 L372.6,323.9 L390.2,310.4 L399.8,296.2 L413.1,278.8 L416.1,253.1 L434.4,211.4 L420.1,208.8 L405.9,193.6 L394.7,171.9 L388.1,162.7 L363.5,160.5 L340.8,149.7 L307.3,151.8 L297.4,165.0 L279.1,186.2 Z", "M301.3,149.7 L302.8,137.7 L318.2,132.1 L311.3,128.5 L323.3,123.4 L332.3,118.6 L334.2,114.2 L326.1,107.6 L333.9,100.0 L342.9,98.2 L357.7,101.9 L380.8,117.1 L388.2,133.9 L373.0,133.9 L373.1,141.6 L366.2,147.7 L355.5,143.6 L342.4,135.8 L335.0,135.8 L325.8,139.6 L301.3,149.7 Z", "M370.4,143.6 L390.4,149.7 L399.8,143.6 L406.9,133.9 L419.7,133.9 L416.1,125.1 L406.0,117.1 L460.9,188.7 L462.7,201.2 L464.7,219.1 L454.1,188.7 L444.2,176.6 L434.0,176.6 L431.8,174.2 L428.0,179.0 L438.3,193.6 L433.6,198.7 L419.7,206.3 L407.5,183.8 L396.0,169.6 L391.9,162.7 L391.3,151.8 L379.9,149.7 L370.4,143.6 Z", "M173.7,219.1 L173.8,240.0 L172.4,253.1 L180.0,278.8 L192.3,303.4 L210.7,336.4 L231.7,358.2 L240.2,362.9 L223.9,346.1 L219.5,330.3 L221.6,310.4 L230.6,296.2 L234.8,260.9 L205.1,240.0 L191.4,219.1 L180.0,211.4 L173.7,219.1 Z", "M179.1,188.7 L180.2,186.2 L191.4,165.0 L186.1,176.6 L193.0,162.7 L200.8,154.0 L215.3,139.6 L229.8,132.1 L244.4,121.8 L245.5,117.1 L252.0,110.1 L251.1,107.6 L245.0,110.1 Z", "M258.6,110.1 L269.8,110.1 L302.5,99.0 L311.1,92.3 L301.9,91.5 L288.3,93.8 L258.6,110.1 Z", "M421.9,271.2 L431.0,278.8 L419.4,303.4 L415.2,301.0 L421.9,271.2 Z"], "egypt": "M374.1,161.6 L391.7,162.1 L396.0,169.6 L401.7,183.8 L378.8,183.8 Z", "stars": [[331, 77, 1.1], [49, 37, 1.6], [96, 187, 1.3], [519, 109, 0.6], [444, 214, 0.7], [92, 282, 1.1], [579, 63, 1.7], [596, 31, 1.3], [406, 25, 1.8], [47, 285, 1.6], [296, 214, 0.8], [120, 292, 1.0], [185, 52, 1.3], [192, 190, 0.7], [64, 288, 0.7], [210, 254, 1.4], [437, 397, 1.0], [599, 232, 1.0], [254, 406, 0.8], [249, 41, 1.3], [537, 253, 1.7], [459, 147, 1.3], [74, 60, 1.2], [168, 387, 1.0], [500, 215, 0.6], [79, 391, 1.3], [321, 174, 1.4], [608, 254, 1.3], [467, 35, 1.6], [276, 242, 1.4], [66, 31, 1.5], [317, 331, 1.3], [456, 145, 1.5], [355, 11, 1.7], [363, 86, 1.3], [505, 30, 0.9], [294, 66, 1.5], [407, 200, 1.7], [508, 41, 0.8], [411, 281, 0.9], [140, 419, 1.1], [563, 142, 1.4], [367, 349, 1.7], [236, 77, 0.7], [154, 118, 1.4], [12, 248, 1.6], [186, 134, 0.9], [149, 214, 1.2], [624, 289, 1.0], [128, 353, 1.6], [632, 335, 1.4], [55, 233, 1.7], [572, 200, 1.1], [403, 53, 1.2], [410, 31, 0.8], [213, 225, 0.8], [348, 307, 0.7], [0, 290, 0.8], [103, 186, 1.3], [72, 447, 0.8], [385, 76, 1.4], [355, 308, 1.0], [125, 59, 1.6], [477, 245, 1.2], [87, 73, 0.7], [350, 379, 0.9], [165, 264, 0.6], [540, 185, 0.8], [556, 468, 0.6], [540, 152, 1.8]]};
+const grp = id => EXAM_GROUPS.find(g => g.id === id);
+const grpQs = G => G.qs.map(i => EXAM.find(x => x.id === i));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('geo-' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('geo-' + k, JSON.stringify(v)); } catch (e) {} }
+};
+let known = new Set(store.get('known', []));
+let stars = store.get('stars', 0);
+let best = store.get('best', 0);
+let cat = 'all', mode = 'study', deck = [], pos = 0, flipped = false, round = { total: 0, good: 0 }, timer = null, timeLeft = 0;
+const $ = id => document.getElementById(id);
+
+function addStars(n, el) {
+  stars += n; store.set('stars', stars); $('stars').textContent = '⭐ ' + stars;
+  if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('span'); s.className = 'burst'; s.textContent = ['⭐','✨','🌟'][i % 3];
+    s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top) + 'px';
+    s.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px'); s.style.setProperty('--dy', (-80 - Math.random() * 120) + 'px');
+    document.body.appendChild(s); setTimeout(() => s.remove(), 1000);
+  }
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pool() { return CARDS.filter(c => cat === 'all' || c.cat === cat); }
+
+function renderChips() {
+  const all = [{ id: 'all', name: 'كل الدروس', color: '#1d4f91' }].concat(CATS);
+  $('chips').innerHTML = all.map(c => {
+    const n = c.id === 'all' ? CARDS.length : CARDS.filter(x => x.cat === c.id).length;
+    return `<button class="chip" style="--c:${c.color}" data-cat="${c.id}" aria-pressed="${c.id === cat}">${c.name} (${n})</button>`;
+  }).join('');
+  $('chips').querySelectorAll('.chip').forEach(b => b.onclick = () => { cat = b.dataset.cat; renderChips(); start(); });
+}
+function setMode(m) {
+  mode = m; ['study', 'test', 'race'].forEach(x => $('m-' + x).setAttribute('aria-pressed', x === m)); start();
+}
+function start() {
+  clearInterval(timer); timer = null;
+  const p = pool();
+  if (mode === 'study') deck = p.slice();
+  else if (mode === 'test') { const unk = p.filter(c => !known.has(c.n)); deck = shuffle(unk.length ? unk : p); }
+  else { deck = shuffle(p); timeLeft = 60; }
+  pos = 0; flipped = false; round = { total: deck.length, good: 0 };
+  draw();
+}
+function cardHTML(c) {
+  const k = CATS.find(x => x.id === c.cat);
+  return `<div class="card${flipped ? ' flipped' : ''}" id="card" tabindex="0" role="button" aria-label="اقلب الكارت" style="--c:${k.color}">
+    <div class="face front"><span class="tag">${k.name}</span><span class="no">#${c.n}</span>
+      <div class="emo">${c.emo}</div><div class="q">${c.q}</div><div class="hint">👆 دوس عشان تشوف الإجابة</div></div>
+    <div class="face back"><span class="tag">الإجابة</span><span class="no">#${c.n}</span>
+      <div class="a">${c.a}</div>${c.t ? `<div class="tk">💡 ${c.t}</div>` : ''}</div></div>`;
+}
+function draw() {
+  const stage = $('stage'), act = $('actions');
+  const c = deck[pos];
+  if (!c) return finish();
+  stage.innerHTML = cardHTML(c);
+  const card = $('card');
+  const flip = () => { flipped = !flipped; card.classList.toggle('flipped', flipped); if (mode !== 'study') draw(); };
+  card.onclick = flip; card.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
+  swipe(card);
+  if (mode === 'study') {
+    $('left').textContent = `كارت ${pos + 1} من ${deck.length}`;
+    $('right').textContent = `حافظ ${pool().filter(x => known.has(x.n)).length}`;
+    $('bar').style.width = ((pos + 1) / deck.length * 100) + '%';
+    act.innerHTML = `<button class="btn nav" id="next">التالي ⬅️</button><button class="btn nav" id="prev">➡️ اللي قبله</button>`;
+    act.style.direction = 'ltr';
+    $('next').onclick = () => go(1); $('prev').onclick = () => go(-1);
+  } else {
+    act.style.direction = '';
+    $('left').textContent = mode === 'race' ? `✅ ${round.good}` : `فاضل ${deck.length - pos}`;
+    $('right').innerHTML = mode === 'race' ? `<span class="timer">⏱️ ${timeLeft}</span>` : `✅ ${round.good}`;
+    $('bar').style.width = (pos / deck.length * 100) + '%';
+    if (!flipped && mode === 'test') {
+      act.innerHTML = `<button class="btn nav" id="show" style="grid-column:1/-1">👀 وريني الإجابة</button>`;
+      $('show').onclick = flip;
+    } else {
+      act.innerHTML = `<button class="btn good" id="yes">✅ عارفها</button><button class="btn again" id="no">🔁 لسه</button>`;
+      $('yes').onclick = e => answer(true, e.currentTarget); $('no').onclick = () => answer(false);
+    }
+    if (mode === 'race' && !timer) timer = setInterval(tick, 1000);
+  }
+}
+function go(d) { pos = (pos + d + deck.length) % deck.length; flipped = false; draw(); }
+function answer(ok, el) {
+  const c = deck[pos];
+  if (ok) { known.add(c.n); round.good++; addStars(1, el); }
+  else { known.delete(c.n); if (mode === 'test') deck.push(c); }
+  store.set('known', [...known]);
+  pos++; flipped = false; draw();
+}
+function tick() {
+  timeLeft--;
+  const t = document.querySelector('.timer'); if (t) t.textContent = '⏱️ ' + timeLeft;
+  if (timeLeft <= 0) { clearInterval(timer); timer = null; finish(); }
+}
+function finish() {
+  clearInterval(timer); timer = null;
+  let msg;
+  if (mode === 'race') {
+    const rec = round.good > best; if (rec) { best = round.good; store.set('best', best); addStars(5, $('stars')); }
+    msg = `<div class="big">${rec ? '🏆' : '⏱️'}</div><h2>${rec ? 'رقم قياسي جديد!' : 'خلص الوقت!'}</h2><p>جاوبت <b>${round.good}</b> كارت صح في دقيقة</p><p>أحسن رقم ليك: <b>${best}</b></p>`;
+  } else {
+    addStars(3, $('stars'));
+    const p = pool(), k = p.filter(x => known.has(x.n)).length;
+    msg = `<div class="big">🎉</div><h2>برافو يا بطل!</h2><p>خلصت كل الكروت</p><p>حافظ <b>${k}</b> من <b>${p.length}</b> كارت</p>`;
+  }
+  $('stage').innerHTML = `<div class="done">${msg}</div>`;
+  $('left').textContent = ''; $('right').textContent = ''; $('bar').style.width = '100%';
+  $('actions').style.direction = '';
+  $('actions').innerHTML = `<button class="btn good" id="again" style="grid-column:1/-1">🔄 العب تاني</button>`;
+  $('again').onclick = start;
+}
+function swipe(el) {
+  let x0 = null;
+  el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) < 60 || mode !== 'study') return;
+    el.onclick = null; setTimeout(() => go(dx > 0 ? 1 : -1), 0);
+  });
+}
+$('m-study').onclick = () => setMode('study'); $('m-test').onclick = () => setMode('test'); $('m-race').onclick = () => setMode('race');
+$('stars').textContent = '⭐ ' + stars;
+let done = new Set(store.get('done', [])), lesson = null, slide = 0, tab = 'study';
+function setTab(x) {
+  tab = x; ['study', 'map', 'quiz', 'exam', 'play'].forEach(k => { $('t-' + k).setAttribute('aria-selected', x === k); $(k).hidden = x !== k; });
+  $('t-study').hidden = true; $('t-quiz').hidden = true;
+  if (x !== 'quiz') { clearInterval(timer); timer = null; }
+  if (x === 'study') drawStudy(); else if (x === 'quiz') start(); else if (x === 'play') gHome(); else if (x === 'map') drawMap(); else eStart();
+  try { localStorage.setItem('geo-tab', JSON.stringify(x)); } catch (e) {}
+}
+function drawStudy() {
+  const v = $('study');
+  if (!lesson) {
+    v.innerHTML = `<div class="intro">📚 اختار درس وذاكره كارت كارت. في آخر كل درس هتلاقي زرار <b>«اختبر نفسك»</b> يوديك على الأسئلة بتاعته. كل درس تخلّصه = ⭐⭐</div>
+      <div class="tiles">${LESSONS.map(l => `<button class="tile" style="--c:${l.color}" data-l="${l.id}">${done.has(l.id) ? '<span class="ok">✓ خلصته</span>' : ''}
+        <span class="te">${l.emo}</span><span class="tn">${l.name}</span><span class="tc">${l.slides.length} كروت مذاكرة</span></button>`).join('')}</div>`;
+    v.querySelectorAll('.tile').forEach(b => b.onclick = () => { lesson = LESSONS.find(l => l.id === b.dataset.l); slide = 0; drawStudy(); });
+    return;
+  }
+  const L = lesson, S = L.slides[slide], last = slide === L.slides.length - 1;
+  v.style.setProperty('--c', L.color);
+  v.innerHTML = `<div class="lhead"><button class="back-btn" id="lback">→ الدروس</button><span class="lname">${L.emo} ${L.name}</span>
+      <span class="dots">${L.slides.map((_, i) => `<i class="${i <= slide ? 'on' : ''}"></i>`).join('')}</span></div>
+    <article class="slide" id="slide"><h2><span>${S.emo}</span>${S.title}</h2>
+      ${S.img ? `<img class="zoomable" src="${S.img}" alt="${S.title}" tabindex="0"><div class="zhint">🔍 دوس على الصورة تكبر</div>` : ''}
+      ${S.html ? `<div class="svgbox">${S.html}</div>` : ''}
+      <ul class="pts">${S.pts.map(p => `<li>${p}</li>`).join('')}</ul>
+      ${S.trick ? `<div class="strick">${S.trick}</div>` : ''}</article>
+    <div class="actions" style="direction:ltr">
+      <button class="btn ${last ? 'good' : 'nav'}" id="snext">${last ? '🎯 اختبر نفسك' : 'التالي ⬅️'}</button>
+      <button class="btn nav" id="sprev" ${slide === 0 ? 'disabled style="opacity:.4"' : ''}>➡️ اللي قبله</button></div>`;
+  $('lback').onclick = () => { lesson = null; drawStudy(); };
+  $('sprev').onclick = () => { if (slide > 0) { slide--; drawStudy(); } };
+  $('snext').onclick = e => {
+    if (!last) { slide++; drawStudy(); return; }
+    if (!done.has(L.id)) { done.add(L.id); store.set('done', [...done]); addStars(2, e.currentTarget); }
+    cat = L.cat; mode = 'test'; ['study', 'test', 'race'].forEach(x => $('m-' + x).setAttribute('aria-pressed', x === mode));
+    renderChips(); lesson = null; setTab('quiz');
+  };
+  const img = v.querySelector('.zoomable');
+  if (img) { const open = () => { $('zimg').src = img.src; $('zoom').hidden = false; }; img.onclick = open; img.onkeydown = e => { if (e.key === 'Enter') open(); }; }
+  let x0 = null; const el = $('slide');
+  el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (dx > 70 && !last) { slide++; drawStudy(); } else if (dx < -70 && slide > 0) { slide--; drawStudy(); }
+  });
+  el.scrollTop = 0;
+}
+$('zclose').onclick = () => { $('zoom').hidden = true; };
+$('zoom').onclick = e => { if (e.target.id === 'zoom' || e.target.id === 'zimg') $('zoom').hidden = true; };
+$('t-study').onclick = () => setTab('study'); $('t-quiz').onclick = () => setTab('quiz'); $('t-exam').onclick = () => setTab('exam'); $('t-play').onclick = () => setTab('play'); $('t-map').onclick = () => setTab('map');
+
+let eLes = 'today', eDeck = [], ePos = 0, eStage = 0, eGood = 0, eCloze = false;
+let eKnown = new Set(store.get('eknown', []));
+function ePool() {
+  if (eLes === 'today') { const unk = EXAM.filter(x => !eKnown.has(x.id)); return (unk.length ? unk : EXAM).slice(0, 6); }
+  if (grp(eLes)) return grpQs(grp(eLes));
+  return EXAM.filter(x => eLes === 'all' || x.les === eLes);
+}
+function eStart() {
+  const p = ePool(), unk = p.filter(x => !eKnown.has(x.id));
+  eDeck = grp(eLes) ? p.slice() : unk.length ? unk : p.slice(); ePos = 0; eStage = 0; eGood = 0; eCloze = false; drawExam();
+}
+function drawExam() {
+  const v = $('exam');
+  const p = ePool(), kn = p.filter(x => eKnown.has(x.id)).length, all = EXAM.filter(x => eKnown.has(x.id)).length;
+  const chips = [{ id: 'today', name: '6 أسئلة النهارده', color: '#e0662b', emo: '📅' }, { id: 'all', name: 'كل الأسئلة', color: '#1d4f91', emo: '📝' }].concat(EXAM_GROUPS.map(g => ({ ...g, name: '🧵 ' + g.name })), EXAM_LES).map(l => {
+    const n = l.id === 'today' ? '' : ` (${l.id === 'all' ? EXAM.length : grp(l.id) ? grp(l.id).qs.length : EXAM.filter(x => x.les === l.id).length})`;
+    return `<button class="chip" style="--c:${l.color}" data-e="${l.id}" aria-pressed="${l.id === eLes}">${l.emo} ${l.name}${n}</button>`;
+  }).join('');
+  const Q = eDeck[ePos];
+  let body;
+  if (!Q) {
+    if (eGood) addStars(3, $('stars'));
+    body = `<div class="done"><div class="big">🏅</div><h2>برافو يا بطل!</h2><p>حافظ <b>${all}</b> من <b>${EXAM.length}</b> سؤال امتحان</p>
+      <p>${all < EXAM.length ? 'بكرة نكمّل 6 أسئلة جداد + اللي قلت عليها «لسه» 🔁' : 'حفظت كل الأسئلة! جاهز للامتحان 💪'}</p></div>
+      <div class="actions"><button class="btn good" id="eagain" style="grid-column:1/-1">🔄 سمّع تاني</button></div>`;
+  } else {
+    const L = EXAM_LES.find(l => l.id === Q.les), G = grp(eLes);
+    let btns;
+    if (eStage === 0) btns = `<button class="btn nav" id="enext" style="grid-column:1/-1">🗣️ اشرحهولي بالبلدي</button>`;
+    else if (eStage === 1) btns = `<button class="btn good" id="enext" style="grid-column:1/-1">📝 أكتبها إزاي في الامتحان؟</button>`;
+    else btns = `<button class="btn nav" id="ecloze" style="grid-column:1/-1;padding:10px">${eCloze ? '👀 ورّيني الكلمات' : '🙈 خبّي الكلمات المهمة وسمّعها'}</button>
+      <button class="btn good" id="eyes">✅ حفظتها</button><button class="btn again" id="eno">🔁 لسه</button>`;
+    body = `<div class="status"><span>سؤال ${ePos + 1} من ${eDeck.length}</span><span class="bar"><i style="width:${ePos / eDeck.length * 100}%"></i></span><span>حافظ ${all}/${EXAM.length}</span></div>
+      <article class="slide" style="--c:${L.color}">
+        <div class="qtop"><span class="qtype">${Q.type}</span><span class="qles">${L.emo} ${L.name}</span></div>
+        <div class="qemo">${Q.emo}</div>
+        <div class="qq">${Q.q}</div>
+        ${G && G.notes[Q.id] && eStage >= 2 ? `<div class="gnote">${G.notes[Q.id]}</div>` : ''}
+        ${eStage >= 1 ? `<div class="easy"><div class="elabel">🗣️ بالبلدي</div>${Q.easy}</div>` : ''}
+        ${eStage >= 2 ? `<div class="how">✍️ <b>${Q.type}:</b> ${EXAM_HOW[Q.type]}</div>
+          <div class="eans${eCloze ? ' cloze' : ''}"><div class="elabel">📝 اكتبها في الامتحان كده</div>${Q.a}</div>
+          ${eCloze ? '<div class="zhint">قول الكلمات المستخبية بصوت عالي… ودوس على أي كلمة عشان تشوفها</div>' : ''}
+          ${Q.t ? `<div class="strick">${Q.t}</div>` : ''}` : ''}
+      </article>
+      <div class="actions">${btns}</div>`;
+  }
+  v.innerHTML = `<div class="chips">${chips}</div>
+    <details class="guide"><summary>👨‍👧 إزاي تحفّظهوله؟ (5 دقايق لكل سؤال)</summary>
+      <ol><li><b>اقرا السؤال</b> وخليه يحاول يجاوب لوحده الأول.</li>
+      <li>دوس <b>«بالبلدي»</b> واشرحهوله بكلامكم العادي لحد ما يفهم.</li>
+      <li>دوس <b>«أكتبها إزاي»</b>: يحفظ <b>الكلمات الملوّنة</b> بس، مش الجملة كلها.</li>
+      <li>دوس <b>«خبّي الكلمات»</b> وخليه يقول الإجابة بصوته ويملا الكلمات المستخبية.</li>
+      <li>يكتبها <b>مرة واحدة</b> في الكشكول. لو اتلخبط دوس «لسه» وهترجعله تاني.</li></ol>
+      <p>🧵 جرّب <b>«سيناء كلها»</b> و<b>«الصحراء الشرقية كلها»</b>: خريطة واحدة بتربط كل أسئلتها ببعض.</p>
+      <p>📅 كل يوم <b>6 أسئلة بس</b> + تسميع أسئلة امبارح. في 6 أيام هيكون حافظ الـ${EXAM.length} سؤال.</p></details>${gMapBox(eLes, ePos === 0)}${body}`;
+  v.querySelectorAll('.chip').forEach(b => b.onclick = () => { eLes = b.dataset.e; eStart(); });
+  v.querySelectorAll('.eans.cloze b').forEach(b => b.onclick = () => b.classList.add('peek'));
+  const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
+  on('enext', () => { eStage++; drawExam(); });
+  on('ecloze', () => { eCloze = !eCloze; drawExam(); });
+  on('eyes', e => { eKnown.add(Q.id); store.set('eknown', [...eKnown]); eGood++; addStars(1, e.currentTarget); ePos++; eStage = 0; eCloze = false; drawExam(); });
+  on('eno', () => { eKnown.delete(Q.id); store.set('eknown', [...eKnown]); eDeck.push(Q); ePos++; eStage = 0; eCloze = false; drawExam(); });
+  on('eagain', eStart);
+  const sl = v.querySelector('.slide'); if (sl && eStage) sl.scrollTop = sl.scrollHeight;
+}
+
+// «العب» tab: games where he answers the exam questions himself (auto-checked)
+const OPENER = {
+  'بم تفسر': 'بسبب…', 'دلل': 'حيث يوجد… (وأمثلة)', 'ماذا يحدث لو': 'لا نستطيع… / يتوقف…', 'أكمل': 'الكلمة الناقصة بس',
+  'ما المقصود': 'وصف… / تنوع… (التعريف)', 'صحح الخطأ': 'أكتب الجملة كلها صح', 'اذكر': 'أكتب النقط واحدة واحدة'
+};
+const GAMES = [
+  { id: 'mcq', emo: '🎯', name: 'اختار الإجابة', sub: 'سؤال و3 إجابات… مين الصح؟', color: '#e0662b' },
+  { id: 'cloze', emo: '🧩', name: 'كمّل الكلمة الناقصة', sub: 'الإجابة ناقصة كلمة مهمة', color: '#8e44ad' },
+  { id: 'match', emo: '🔗', name: 'وصّل', sub: 'وصّل كل سؤال بإجابته', color: '#16a085' },
+  { id: 'open', emo: '✍️', name: 'ابدأ الإجابة صح', sub: 'بسبب؟ حيث يوجد؟ لا نستطيع؟', color: '#2c7be5' },
+];
+const ROUND = 8;
+let gLes = null, gGame = null, gQs = [], gI = 0, gScore = 0, gLocked = false, gMatch = null;
+const plain = h => h.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const bolds = h => [...h.matchAll(/<b>(.*?)<\/b>/g)].map(m => plain(m[1])).filter(x => x.length > 1 && x.length <= 32);
+function gPool() { return grp(gLes) ? grpQs(grp(gLes)) : EXAM.filter(x => gLes === 'all' || x.les === gLes); }
+function gMapBox(id, open) { const G = grp(id); return G ? `<details class="gmapwrap" style="--gc:${G.color}" ${open ? 'open' : ''}><summary>🗺️ الخريطة اللي بتربط أسئلة ${G.name}</summary>${G.map}<div class="strick">${G.trick}</div></details>` : ''; }
+function pickOthers(list, n) { return shuffle(list).slice(0, n); }
+function mark(ok, el) {
+  const Q = gQs[gI];
+  if (ok) { gScore++; addStars(1, el); } else { eKnown.delete(Q.id); store.set('eknown', [...eKnown]); }
+}
+
+function gHome() {
+  gGame = null;
+  const v = $('play');
+  if (!gLes) {
+    const les = EXAM_LES.concat(EXAM_GROUPS.map(g => ({ ...g, name: '🧵 ' + g.name })), [{ id: 'all', name: 'كل الدروس', color: '#1d4f91', emo: '📝' }]);
+    v.innerHTML = `<div class="intro">🕹️ هنا <b>انت اللي بتجاوب</b> على أسئلة الامتحان والصفحة بتصحّحلك. <b>اختار الدرس الأول:</b></div>
+      <div class="tiles">${les.map(l => { const n = l.id === 'all' ? EXAM.length : grp(l.id) ? grp(l.id).qs.length : EXAM.filter(x => x.les === l.id).length;
+        return `<button class="tile" style="--c:${l.color}" data-g="${l.id}"><span class="te">${l.emo}</span><span class="tn">${l.name}</span><span class="tc">${n} سؤال</span></button>`; }).join('')}</div>`;
+    v.querySelectorAll('.tile').forEach(b => b.onclick = () => { gLes = b.dataset.g; gHome(); });
+    return;
+  }
+  const L = EXAM_LES.find(l => l.id === gLes) || grp(gLes) || { name: 'كل الدروس', emo: '📝', color: '#1d4f91' };
+  v.innerHTML = `<div class="lhead" style="--c:${L.color}"><button class="back-btn" id="gles">→ الدروس</button><span class="lname">${L.emo} ${L.name}</span></div>
+    ${gMapBox(gLes, true)}<div class="intro">اختار لعبة 👇 كل إجابة صح = ⭐ — والغلط بيرجعلك في «📝 الامتحان» عشان تذاكره تاني.</div>
+    <div class="tiles">${GAMES.map(g => { const b = store.get('gbest-' + gLes + '-' + g.id, null);
+      return `<button class="tile" style="--c:${g.color}" data-game="${g.id}">${b !== null ? `<span class="ok">أحسن نتيجة ${b}</span>` : ''}
+      <span class="te">${g.emo}</span><span class="tn">${g.name}</span><span class="tc">${g.sub}</span></button>`; }).join('')}</div>`;
+  $('gles').onclick = () => { gLes = null; gHome(); };
+  v.querySelectorAll('.tile').forEach(b => b.onclick = () => gStart(b.dataset.game));
+}
+function gStart(id) {
+  gGame = GAMES.find(g => g.id === id); gI = 0; gScore = 0; gLocked = false;
+  let p = gPool();
+  if (id === 'cloze') p = p.filter(x => bolds(x.a).length);
+  gQs = shuffle(p).slice(0, id === 'match' ? 16 : ROUND);
+  if (id === 'match') { gMatch = null; gQs = gQs.slice(0, Math.min(16, gQs.length - gQs.length % 4)); }
+  gDraw();
+}
+function gHead(total) {
+  return `<div class="lhead" style="--c:${gGame.color}"><button class="back-btn" id="gback">→ الألعاب</button><span class="lname">${gGame.emo} ${gGame.name}</span><span class="stars">✅ ${gScore}</span></div>
+    <div class="status"><span>سؤال ${Math.min(gI + 1, total)} / ${total}</span><span class="bar"><i style="width:${gI / total * 100}%"></i></span><span></span></div>`;
+}
+function gDraw() {
+  const v = $('play'), total = gGame.id === 'match' ? gQs.length / 4 : gQs.length;
+  if (gI >= total) return gEnd(total);
+  const Q = gQs[gI], L = Q && EXAM_LES.find(l => l.id === Q.les);
+  let card = '', opts = [], right = '';
+  if (gGame.id === 'mcq') {
+    right = plain(Q.a);
+    const same = EXAM.filter(x => x.id !== Q.id && plain(x.a) !== right);
+    const pref = same.filter(x => x.les === Q.les && x.type === Q.type), more = same.filter(x => x.les === Q.les);
+    const wrong = [...new Set(pickOthers(pref, 2).concat(pickOthers(more, 2), pickOthers(same, 2)).map(x => plain(x.a)))].filter(x => x !== right).slice(0, 2);
+    opts = shuffle([right, ...wrong]);
+    card = `<div class="qtop"><span class="qtype">${Q.type}</span><span class="qles">${L.emo} ${L.name}</span></div><div class="qemo">${Q.emo}</div><div class="qq">${Q.q}</div>`;
+  } else if (gGame.id === 'cloze') {
+    const bs = bolds(Q.a); right = bs[Math.floor(Math.random() * bs.length)];
+    let done = false;
+    const shown = Q.a.replace(/<b>(.*?)<\/b>/g, (m, x) => { if (!done && plain(x) === right) { done = true; return '<span class="gap">؟؟؟</span>'; } return m; });
+    const pool = [...new Set(EXAM.filter(x => x.id !== Q.id).flatMap(x => bolds(x.a)))].filter(x => !bs.includes(x));
+    opts = shuffle([right, ...pickOthers(pool, 3)]);
+    card = `<div class="qtop"><span class="qtype">${Q.type}</span><span class="qles">${L.emo} ${L.name}</span></div><div class="qq" style="font-size:clamp(20px,4vw,28px)">${Q.q}</div>
+      <div class="eans"><div class="elabel">📝 الإجابة ناقصة كلمة… مين هي؟</div>${shown}</div>`;
+  } else if (gGame.id === 'open') {
+    right = OPENER[Q.type];
+    opts = shuffle([right, ...pickOthers(Object.values(OPENER).filter(x => x !== right), 3)]);
+    card = `<div class="qtop"><span class="qtype">؟</span><span class="qles">${L.emo} ${L.name}</span></div><div class="qemo">${Q.emo}</div><div class="qq">${Q.q}</div>
+      <div class="how">✍️ <b>هتبدأ الإجابة إزاي؟</b></div>`;
+  }
+  if (gGame.id === 'match') return gDrawMatch();
+  v.innerHTML = gHead(total) + `<article class="slide" style="--c:${L.color}">${card}<div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}">${o}</button>`).join('')}</div><div id="gfb"></div></article>
+    <div class="actions"><button class="btn nav" id="gnext" style="grid-column:1/-1" hidden>التالي ⬅️</button></div>`;
+  $('gback').onclick = gHome;
+  v.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    if (gLocked) return; gLocked = true;
+    const ok = opts[+b.dataset.i] === right;
+    v.querySelectorAll('.opt').forEach(x => { if (opts[+x.dataset.i] === right) x.classList.add('right'); x.disabled = true; });
+    if (!ok) b.classList.add('wrong');
+    mark(ok, b);
+    const extra = gGame.id === 'open' ? `<div class="eans"><div class="elabel">📝 الإجابة</div>${Q.a}</div>` : (Q.t ? `<div class="strick">${Q.t}</div>` : '');
+    $('gfb').innerHTML = `<div class="fb ${ok ? 'ok' : 'no'}">${ok ? '🎉 برافو! صح' : '💪 ولا يهمك… الصح متعلّم بالأخضر'}</div>${extra}`;
+    $('gnext').hidden = false; $('gnext').focus();
+    const sl = v.querySelector('.slide'); sl.scrollTop = sl.scrollHeight;
+  });
+  $('gnext').onclick = () => { gI++; gLocked = false; gDraw(); };
+}
+function gDrawMatch() {
+  const v = $('play'), total = gQs.length / 4, set = gQs.slice(gI * 4, gI * 4 + 4);
+  if (!gMatch) gMatch = { qs: set, as: shuffle(set), sel: null, done: new Set(), miss: 0 };
+  const M = gMatch;
+  v.innerHTML = gHead(total) + `<div class="intro">🔗 دوس على <b>سؤال</b> وبعدين على <b>إجابته</b></div>
+    <div class="match"><div class="mcol">${M.qs.map(x => `<button class="mq ${M.done.has(x.id) ? 'right' : ''} ${M.sel === x.id ? 'sel' : ''}" data-q="${x.id}" ${M.done.has(x.id) ? 'disabled' : ''}>${x.emo} ${plain(x.q)}</button>`).join('')}</div>
+    <div class="mcol">${M.as.map(x => `<button class="ma ${M.done.has(x.id) ? 'right' : ''}" data-a="${x.id}" ${M.done.has(x.id) ? 'disabled' : ''}>${plain(x.a)}</button>`).join('')}</div></div>
+    <div class="actions"><button class="btn nav" id="gnext" style="grid-column:1/-1" ${M.done.size === 4 ? '' : 'hidden'}>التالي ⬅️</button></div>`;
+  $('gback').onclick = gHome;
+  v.querySelectorAll('.mq').forEach(b => b.onclick = () => { M.sel = b.dataset.q; gDrawMatch(); });
+  v.querySelectorAll('.ma').forEach(b => b.onclick = () => {
+    if (!M.sel) return;
+    if (b.dataset.a === M.sel) { M.done.add(M.sel); addStars(1, b); }
+    else { M.miss++; const Q = EXAM.find(x => x.id === M.sel); eKnown.delete(Q.id); store.set('eknown', [...eKnown]); b.classList.add('wrong'); setTimeout(() => b.classList.remove('wrong'), 600); return; }
+    M.sel = null; gDrawMatch();
+  });
+  $('gnext').onclick = () => { if (M.miss === 0) gScore++; gI++; gMatch = null; gDraw(); };
+}
+function gEnd(total) {
+  const k = 'gbest-' + gLes + '-' + gGame.id, best = store.get(k, -1);
+  if (gScore > best) store.set(k, gScore);
+  if (gScore === total) addStars(5, $('stars'));
+  const msg = gScore === total ? '🏆 العلامة الكاملة!' : gScore >= total / 2 ? '👏 شاطر!' : '💪 جرّب تاني';
+  $('play').innerHTML = `<div class="done"><div class="big">${gScore === total ? '🏆' : '⭐'}</div><h2>${msg}</h2>
+    <p>جاوبت <b>${gScore}</b> من <b>${total}</b> ${gGame.id === 'match' ? 'مجموعات من غير غلط' : 'صح'}</p>
+    ${gScore < total ? '<p>الأسئلة اللي غلطت فيها رجعت في «📝 الامتحان» عشان تذاكرها 🔁</p>' : ''}</div>
+    <div class="actions"><button class="btn good" id="gre">🔄 العب تاني</button><button class="btn nav" id="gh">🕹️ لعبة تانية</button></div>`;
+  $('gre').onclick = () => gStart(gGame.id); $('gh').onclick = gHome;
+}
+
+// «الخريطة» tab: tap a region or a landmark → its info and its questions; plus the «لاقي المكان» game
+let mRegion = null, mSpot = null, mGame = null, mVB = [0, 0, 400, 420], mAnim = null;
+const FULL = [0, 0, 400, 420];
+const reg = id => MAP_REGIONS.find(r => r.id === id) || (id === 'globe' ? GLOBE_REG : undefined);
+let mMode = 'egypt';
+const GLOBE_REG = { id: 'globe', name: 'الكورة الأرضية', emo: '🌍', color: '#1d4f91' };
+function globeSvg() {
+  const { cx, cy, r } = GLOBE, inGame = !!mGame || !!roy;
+  const Y = lat => cy - r * Math.sin(lat * Math.PI / 180), W = lat => r * Math.cos(lat * Math.PI / 180);
+  const latLine = (id, lat, col, w) => `<g class="gline" data-s="${id}"><ellipse cx="${cx}" cy="${Y(lat)}" rx="${W(lat)}" ry="${Math.max(3, W(lat) * .07)}" fill="none" stroke="${col}" stroke-width="${w}"/>
+      <ellipse cx="${cx}" cy="${Y(lat)}" rx="${W(lat)}" ry="10" fill="transparent" stroke="transparent" stroke-width="12"/></g>`;
+  const longs = [30, 60, 80].map(a => `<ellipse cx="${cx}" cy="${cy}" rx="${r * Math.sin(a * Math.PI / 180)}" ry="${r}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>`).join('');
+  const lineLabels = inGame ? '' : GLOBE_SPOTS.filter(s => s.short).map(s => `<text class="glab2" x="${s.lx}" y="${s.y - 7}">${s.short}</text>`).join('');
+  const spots = GLOBE_SPOTS.map(s => {
+    const G0 = mGame || roy, st = G0 && G0.mark[s.id], hl = roy && roy.q && roy.q.hl === s.id;
+    const showLab = (!inGame || st === 'right') && s.lab !== 'line';
+    const L = { start: ['start', 18, 5], top: ['middle', 0, -20], below: ['middle', 0, 32] }[s.lab] || ['middle', 0, 32];
+    return `<g class="mspot${mSpot === s.id ? ' on' : ''}${st ? ' ' + st : ''}${hl ? ' hl' : ''}" data-s="${s.id}" transform="translate(${s.x},${s.y})">
+      <circle r="${s.id === 'sun' ? 20 : 14}" fill="#fff" stroke="#1d4f91" stroke-width="3"/>
+      <text text-anchor="middle" dy="${s.id === 'sun' ? 7 : 5}" font-size="${s.id === 'sun' ? 22 : 16}">${hl ? '❓' : inGame && !st ? '📍' : s.emo}</text>
+      ${showLab ? `<text class="mlab" text-anchor="${L[0]}" x="${L[1]}" y="${L[2]}" font-size="12">${s.name}</text>` : ''}</g>`;
+  }).join('');
+  const flakes = [-60, -25, 15, 50, 85, -95].map((dx, i) => `<text class="flake" x="${cx + dx}" y="${cy - r - 4}" style="animation-delay:${i * .6}s">❄</text>`).join('');
+  return `<svg id="msvg" viewBox="0 0 640 470" preserveAspectRatio="xMidYMid meet" style="direction:ltr">
+    <defs>
+      <radialGradient id="ocean" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#5fb4ff"/><stop offset=".55" stop-color="#1f6fd1"/><stop offset="1" stop-color="#0b3577"/></radialGradient>
+      <radialGradient id="shade" cx="35%" cy="30%" r="80%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient>
+      <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset=".78" stop-color="#7cc4ff" stop-opacity=".55"/><stop offset="1" stop-color="#7cc4ff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="sunG" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff7c0"/><stop offset=".4" stop-color="#ffd23f" stop-opacity=".9"/><stop offset="1" stop-color="#ff9a1f" stop-opacity="0"/></radialGradient>
+      <linearGradient id="warm" x1="0" x2="1"><stop offset=".45" stop-color="#ffb347" stop-opacity="0"/><stop offset="1" stop-color="#ffb347" stop-opacity=".28"/></linearGradient>
+      <linearGradient id="cold" x1="1" x2="0"><stop offset=".55" stop-color="#cfe9ff" stop-opacity="0"/><stop offset="1" stop-color="#cfe9ff" stop-opacity=".3"/></linearGradient>
+      <linearGradient id="landG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fcf6a"/><stop offset=".45" stop-color="#d9b36c"/><stop offset="1" stop-color="#5fae4f"/></linearGradient>
+      <clipPath id="ball"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>
+      <marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffd66b"/></marker>
+    </defs>
+    <rect width="640" height="470" fill="#081a36"/>
+    ${GLOBE.stars.map(([x, y, s], i) => `<circle class="star" cx="${x}" cy="${y}" r="${s}" fill="#fff" style="animation-delay:${(i % 7) * .4}s"/>`).join('')}
+    <circle cx="575" cy="60" r="70" fill="url(#sunG)" class="sunglow"/>
+    <ellipse class="gshadow" cx="${cx}" cy="${cy + r + 34}" rx="${r * .7}" ry="12" fill="#000" fill-opacity=".45"/>
+    <g class="floaty">
+      <circle cx="${cx}" cy="${cy}" r="${r + 16}" fill="url(#glow)"/>
+      <g class="gline" data-s="spin"><path d="M ${cx - 90} ${cy - r - 22} A 170 40 0 0 1 ${cx + 110} ${cy - r - 10}" fill="none" stroke="#ffd66b" stroke-width="4" marker-end="url(#ar)"/></g>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#ocean)"/>
+      <g clip-path="url(#ball)">
+        ${GLOBE.land.map(d => `<path d="${d}" fill="url(#landG)" stroke="#2f7d3a" stroke-width="1" stroke-opacity=".5"/>`).join('')}
+        <path d="M ${cx - W(66.5)} ${Y(66.5)} A ${r} ${r} 0 0 1 ${cx + W(66.5)} ${Y(66.5)} A ${W(66.5)} 8 0 0 1 ${cx - W(66.5)} ${Y(66.5)} Z" fill="#f4fbff"/>
+        <path d="M ${cx - W(66.5)} ${Y(-66.5)} A ${r} ${r} 0 0 0 ${cx + W(66.5)} ${Y(-66.5)} A ${W(66.5)} 8 0 0 0 ${cx - W(66.5)} ${Y(-66.5)} Z" fill="#f4fbff"/>
+        <g class="clouds"><ellipse cx="${cx - 60}" cy="${cy - 40}" rx="50" ry="9" fill="#fff" fill-opacity=".35"/><ellipse cx="${cx + 40}" cy="${cy + 60}" rx="60" ry="8" fill="#fff" fill-opacity=".3"/><ellipse cx="${cx - 20}" cy="${cy + 110}" rx="40" ry="7" fill="#fff" fill-opacity=".3"/></g>
+        <rect x="${cx - r}" y="${cy - r}" width="${2 * r}" height="${2 * r}" fill="url(#warm)"/>
+        ${longs}
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#shade)"/>
+      </g>
+      <path class="gline" data-s="egypt" d="${GLOBE.egypt}" fill="#ff4d4d" stroke="#fff" stroke-width="2"/>
+      <g class="gline" data-s="greenwich"><line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="#ff7ab8" stroke-width="4"/><line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="transparent" stroke-width="18"/></g>
+      ${latLine('polarN', 66.5, '#bfe8ff', 3)}${latLine('cancer', 23.5, '#ffb000', 5)}${latLine('equator', 0, '#ff4d4d', 6)}${latLine('capricorn', -23.5, '#7cc4ff', 5)}${latLine('polarS', -66.5, '#bfe8ff', 3)}
+      ${flakes}${lineLabels}${inGame ? '' : [['summer', 'cancer'], ['spring', 'equator'], ['autumn', 'equator'], ['winter', 'capricorn']].map(([a, b]) => { const A = spot(a), B = spot(b); return `<line class="ray" x1="${A.x - 17}" y1="${A.y}" x2="${B.x + 17}" y2="${B.y}"/>`; }).join('')}${spots}
+    </g>
+  </svg>`;
+}
+
+const spot = id => MAP_SPOTS.find(s => s.id === id) || GLOBE_SPOTS.find(s => s.id === id);
+
+function mSvg() {
+  const box = document.querySelector('.mapbox'), cw = box ? box.clientWidth : 380, ch = box ? box.clientHeight : 260;
+  const upp = Math.max(mVB[2] / cw, mVB[3] / ch), inGame = !!mGame || !!roy, scale = upp * (mRegion ? 17 : 11) / 12;
+  const regions = MAP_REGIONS.map(r => `<polygon class="mreg${mRegion === r.id ? ' on' : ''}${mRegion && mRegion !== r.id ? ' dim' : ''}" data-r="${r.id}" points="${r.pts}" fill="${r.fill}" stroke="${r.color}"/>`).join('');
+  const nile = `<path d="M225,402 C214,360 222,340 216,300 C210,265 214,230 226,190 C230,170 232,160 232,150" class="river"/>
+    <path d="M232,150 C222,120 205,90 180,44 M232,150 C240,115 250,85 262,44" class="river thin"/>`;
+  const spots = MAP_SPOTS.map(s => {
+    const show = !inGame && (!mRegion || mRegion === s.r), lab = !inGame && mRegion === s.r;
+    const R = reg(s.r), G0 = mGame || roy, st = G0 && G0.mark[s.id], hl = roy && roy.q && roy.q.hl === s.id;
+    return `<g class="mspot${mSpot === s.id ? ' on' : ''}${st ? ' ' + st : ''}${hl ? ' hl' : ''}" data-s="${s.id}" transform="translate(${s.x},${s.y}) scale(${scale})" ${!show && !inGame ? 'style="opacity:.25"' : ''}>
+      <circle r="12" fill="#fff" stroke="${R.color}" stroke-width="3"/>
+      <text text-anchor="middle" dy="5" font-size="14">${hl ? '❓' : inGame && !st ? '📍' : s.emo}</text>
+      ${lab || st === 'right' ? `<text class="mlab" text-anchor="middle" y="26" font-size="10">${s.name}</text>` : ''}</g>`;
+  }).join('');
+  const labels = !mRegion ? MAP_REGIONS.map(r => {
+    const c = { west: [100, 230], east: [300, 370], sinai: [334, 30], nile: [180, 410] }[r.id];
+    return `<text class="rlab" x="${c[0]}" y="${c[1]}" text-anchor="middle" fill="${r.color}">${inGame ? '' : r.name}</text>`;
+  }).join('') : '';
+  return `<svg id="msvg" viewBox="${mVB.join(' ')}" preserveAspectRatio="xMidYMid meet" style="direction:ltr">
+    <rect x="-50" y="-50" width="520" height="520" fill="#efe6d4"/>
+    <rect x="-50" y="-50" width="520" height="92" fill="#9fd3ff"/>
+    <polygon points="284,118 300,160 330,212 360,300 386,402 420,402 420,230 352,205 392,98 381,100 341,196 302,142 288,112" fill="#7fc4ff"/>
+    <text x="110" y="24" class="sea">البحر المتوسط</text><text x="392" y="250" class="sea" transform="rotate(62 392 250)">البحر الأحمر</text>
+    ${regions}${nile}${labels}${spots}
+    <g transform="translate(30,380)" class="compass"><text text-anchor="middle" y="-14" font-size="11">ش N</text><text text-anchor="middle" font-size="16">🧭</text></g>
+  </svg>`;
+}
+function mZoom(to) {
+  const from = mVB.slice(), t0 = performance.now(), dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 350;
+  cancelAnimationFrame(mAnim);
+  const step = now => {
+    const p = dur ? Math.min(1, (now - t0) / dur) : 1, e = 1 - Math.pow(1 - p, 3);
+    mVB = from.map((v, i) => v + (to[i] - v) * e);
+    const svg = $('msvg'); if (svg) svg.setAttribute('viewBox', mVB.join(' '));
+    if (p < 1) mAnim = requestAnimationFrame(step); else drawMap();
+  };
+  mAnim = requestAnimationFrame(step);
+}
+function qItem(kind, id) {
+  if (kind === 'q') {
+    const Q = EXAM.find(x => x.id === id); if (!Q) return '';
+    return `<details class="mq-item"><summary><span class="qtype small">${Q.type}</span> ${Q.q}</summary>
+      <div class="easy"><div class="elabel">🗣️ بالبلدي</div>${Q.easy}</div>
+      <div class="eans"><div class="elabel">📝 اكتبها في الامتحان كده</div>${Q.a}</div>
+      <button class="btn good mknow" data-q="${Q.id}">${eKnown.has(Q.id) ? '✅ حافظها' : '✅ حفظتها'}</button></details>`;
+  }
+  const C = CARDS.find(x => x.n === id); if (!C) return '';
+  return `<details class="mq-item"><summary><span class="qtype small" style="background:#1d4f91">كارت</span> ${C.q}</summary>
+    <div class="eans"><div class="elabel">✅ الإجابة</div>${C.a}</div>${C.t ? `<div class="strick">${C.t}</div>` : ''}</details>`;
+}
+function qList(exam, cards, title) {
+  const items = exam.map(i => qItem('q', i)).concat(cards.map(n => qItem('c', n))).join('');
+  return items ? `<h3 class="mh">❓ ${title}</h3><div class="mqs">${items}</div>` : '';
+}
+function mPanel() {
+  if (roy) return royPanel();
+  if (mGame) {
+    const T = mGame.list[mGame.i];
+    if (!T) {
+      const total = mGame.list.length; if (mGame.score === total) addStars(5, $('stars'));
+      return `<div class="done"><div class="big">${mGame.score === total ? '🏆' : '🗺️'}</div><h2>${mGame.score === total ? 'حافظ الخريطة كلها!' : 'شاطر!'}</h2>
+        <p>لقيت <b>${mGame.score}</b> من <b>${total}</b> مكان من أول مرة</p></div>
+        <div class="actions"><button class="btn good" id="mgre">🔄 العب تاني</button><button class="btn nav" id="mgend">🗺️ ارجع للخريطة</button></div>`;
+    }
+    const name = T.kind === 'r' ? reg(T.id).name : spot(T.id).name, emo = T.kind === 'r' ? reg(T.id).emo : spot(T.id).emo;
+    return `<div class="mgame"><div class="status"><span>${mGame.i + 1} / ${mGame.list.length}</span><span class="bar"><i style="width:${mGame.i / mGame.list.length * 100}%"></i></span><span>✅ ${mGame.score}</span></div>
+      <div class="qq">📍 فين ${emo} <b>${name}</b>؟</div>
+      <div class="zhint">${T.kind === 'r' ? 'دوس على المنطقة في الخريطة' : 'دوس على العلامة 📍 الصح'}</div>
+      <div id="mfb">${mGame.fb || ''}</div>
+      ${mGame.wait ? '<div class="actions"><button class="btn nav" id="mgnext" style="grid-column:1/-1">التالي ⬅️</button></div>' : ''}
+      <button class="back-btn" id="mgend" style="align-self:center">✕ اقفل اللعبة</button></div>`;
+  }
+  if (mSpot) {
+    const S = spot(mSpot), R = reg(S.r);
+    return `<div class="lhead" style="--c:${R.color}"><button class="back-btn" id="mback">→ ${R.name}</button><span class="lname">${S.emo} ${S.name}</span></div>
+      <div class="mcard" style="--c:${R.color}"><div class="minfo">${S.info}</div><div class="strick">${S.trick}</div>
+      ${qList(S.exam, S.cards, 'أسئلتها في الامتحان')}</div>`;
+  }
+  if (mRegion) {
+    const R = reg(mRegion), sp = MAP_SPOTS.filter(s => s.r === R.id);
+    return `<div class="lhead" style="--c:${R.color}"><button class="back-btn" id="mback">→ مصر كلها</button><span class="lname">${R.emo} ${R.name}</span></div>
+      <div class="mcard" style="--c:${R.color}"><ul class="pts">${R.facts.map(f => `<li>${f}</li>`).join('')}</ul><div class="strick">${R.trick}</div>
+      <h3 class="mh">📍 الأماكن (دوس على أي واحدة)</h3><div class="mchips">${sp.map(s => `<button class="chip" style="--c:${R.color}" data-s="${s.id}">${s.emo} ${s.name}</button>`).join('')}</div>
+      ${qList(R.exam, R.cards, 'أسئلة عامة عن ' + R.name)}</div>`;
+  }
+  if (mMode === 'globe') return `<div class="intro">🌍 <b>دوس على أي خط أو علامة</b>: دوائر العرض ↔️، خطوط الطول ↕️، الشمس ☀️ والفصول، الطقس والمناخ 🌦️. كل واحدة جواها أسئلتها.</div>
+    <div class="mchips">${GLOBE_SPOTS.map(s => `<button class="chip" style="--c:#1d4f91" data-s="${s.id}">${s.emo} ${s.name}</button>`).join('')}</div>
+    <div class="actions"><button class="btn royale" id="roy">🎮 GEO ROYALE</button><button class="btn nav" id="locker">🏆 COLLECTION</button></div>`;
+  return `<div class="intro">🗺️ <b>دوس على أي حتة في الخريطة</b>: الصحراء الغربية 🐪، الشرقية ⛰️، سيناء 🔺، أو النيل والدلتا 🌿. كل حتة جواها علاماتها وأسئلتها. (والجمل 🐪 والنخيل 🌴 والمحميات 🛡️ في الصحرا)</div>
+    <div class="mchips">${MAP_REGIONS.map(r => `<button class="chip" style="--c:${r.color}" data-r="${r.id}">${r.emo} ${r.name}</button>`).join('')}</div>
+    <div class="actions"><button class="btn royale" id="roy">🎮 GEO ROYALE</button><button class="btn nav" id="locker">🏆 COLLECTION</button></div>`;
+}
+function drawMap() {
+  const v = $('map');
+  v.innerHTML = roy ? `${royHud()}<div class="mapbox${mMode === 'globe' ? ' globe' : ''}">${mMode === 'globe' ? globeSvg() : mSvg()}</div><div class="mpanel">${mPanel()}</div>` : `<div class="mmode">${[['egypt', '🇪🇬 خريطة مصر'], ['globe', '🌍 الكورة الأرضية']].map(([k, n]) => `<button class="chip" data-mode="${k}" aria-pressed="${mMode === k}">${n}</button>`).join('')}</div>
+    <div class="mapbox${mMode === 'globe' ? ' globe' : ''}">${mMode === 'globe' ? globeSvg() : mSvg()}</div><div class="mpanel">${mPanel()}</div>`;
+  v.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { roy = null; mMode = b.dataset.mode; mRegion = null; mSpot = null; mGame = null; mVB = FULL.slice(); drawMap(); });
+  v.querySelectorAll('.gline').forEach(el => el.onclick = () => { if (roy) return royTap('s', el.dataset.s, el); if (mGame) return mGuess('s', el.dataset.s, el); mSpot = el.dataset.s; drawMap(); });
+  const goRegion = id => { mRegion = id; mSpot = null; mZoom(reg(id).box); };
+  v.querySelectorAll('.mreg').forEach(p => p.onclick = () => {
+    if (roy) return royTap('r', p.dataset.r, p);
+    if (mGame) return mGuess('r', p.dataset.r, p);
+    if (mRegion !== p.dataset.r) goRegion(p.dataset.r);
+  });
+  v.querySelectorAll('.mspot').forEach(g => g.onclick = e => {
+    e.stopPropagation();
+    const S = spot(g.dataset.s);
+    if (roy) return royTap('s', S.id, g);
+    if (mGame) return mGuess('s', S.id, g);
+    if (S.r === 'globe' || mRegion === S.r) { mSpot = S.id; drawMap(); } else { mRegion = S.r; mSpot = S.id; mZoom(reg(S.r).box); }
+  });
+  v.querySelectorAll('.mpanel [data-r]').forEach(b => b.onclick = () => goRegion(b.dataset.r));
+  v.querySelectorAll('.mpanel .chip[data-s]').forEach(b => b.onclick = () => { mSpot = b.dataset.s; drawMap(); });
+  v.querySelectorAll('.mknow').forEach(b => b.onclick = e => { eKnown.add(b.dataset.q); store.set('eknown', [...eKnown]); addStars(1, e.currentTarget); b.textContent = '✅ حافظها'; });
+  const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
+  on('mback', () => { if (mSpot) { mSpot = null; drawMap(); } else { mRegion = null; mZoom(FULL); } });
+  on('mgame', mGameStart);
+  on('mgre', mGameStart);
+  on('mgend', () => { mGame = null; drawMap(); });
+  on('roy', royStart); on('locker', openLocker);
+  if (roy) royBind();
+  on('mgnext', () => { mGame.i++; mGame.wait = false; mGame.fb = ''; mGame.tries = 0; mGame.mark = {}; drawMap(); });
+}
+function mGameStart() {
+  mRegion = null; mSpot = null; mVB = FULL.slice();
+  const regs = mMode === 'globe' ? [] : shuffle(MAP_REGIONS).slice(0, 2).map(r => ({ kind: 'r', id: r.id }));
+  const sps = shuffle(mMode === 'globe' ? GLOBE_SPOTS : MAP_SPOTS).slice(0, mMode === 'globe' ? 10 : 8).map(s => ({ kind: 's', id: s.id }));
+  mGame = { list: regs.concat(sps), i: 0, score: 0, tries: 0, mark: {}, wait: false, fb: '' };
+  drawMap();
+}
+function mGuess(kind, id, el) {
+  const T = mGame.list[mGame.i]; if (!T || mGame.wait) return;
+  if (T.kind !== kind) { el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400); return; }
+  if (id === T.id) {
+    if (!mGame.tries) { mGame.score++; addStars(1, el); }
+    if (kind === 's') mGame.mark[id] = 'right';
+    const info = kind === 'r' ? reg(id).trick : spot(id).trick;
+    mGame.fb = `<div class="fb ok">🎉 صح!</div><div class="strick">${info}</div>`; mGame.wait = true;
+  } else {
+    mGame.tries++;
+    if (kind === 's') mGame.mark[id] = 'wrong';
+    const nm = kind === 'r' ? reg(id).name : spot(id).name;
+    mGame.fb = `<div class="fb no">لأ… دي ${nm} 😅 جرّب تاني</div>`;
+    if (mGame.tries >= 2) { if (kind === 's') mGame.mark[T.id] = 'right'; mGame.fb = `<div class="fb no">💡 بص… هو هنا (العلامة الخضرا)</div>`; mGame.wait = true; }
+  }
+  drawMap();
+}
+
+// «جغرافيا رويال»: a 10-question match on the Egypt map + the globe, mixed question types, rewards = skins
+let roy = null;
+const RAR = {
+  c: { name: 'عادي', en: 'Common', col: '#8d99a6', bg: 'linear-gradient(160deg,#dfe5eb,#8d99a6)' },
+  u: { name: 'غير عادي', en: 'Uncommon', col: '#31a24c', bg: 'linear-gradient(160deg,#b8f0c4,#2c9a45)' },
+  r: { name: 'نادر', en: 'Rare', col: '#2f80ed', bg: 'linear-gradient(160deg,#b9d8ff,#2468d6)' },
+  e: { name: 'ملحمي', en: 'Epic', col: '#9b51e0', bg: 'linear-gradient(160deg,#e3c6ff,#8433d6)' },
+  l: { name: 'أسطوري', en: 'Legendary', col: '#f2994a', bg: 'linear-gradient(160deg,#ffe29a,#f07c1d)' },
+};
+// Collectibles: 4 kinds × 5 rarities × 4 items (original names). The game store is in English.
+const KINDS = [
+  { id: 'skin', name: 'Skins', emo: '🧍' }, { id: 'weapon', name: 'Weapons', emo: '⚔️' },
+  { id: 'hero', name: 'Superheroes', emo: '🦸' }, { id: 'car', name: 'Cars', emo: '🏎️' },
+];
+const ITEMS = [];
+const addKind = (kind, pre, rows) => rows.forEach(([r, emo, name], i) => ITEMS.push({ id: pre + (i + 1), kind, r, emo, name }));
+addKind('skin', 's', [
+  ['c', '🧢', 'Little Explorer'], ['c', '🐫', 'Camel Rider'], ['c', '🎒', 'Oasis Backpacker'], ['c', '🧭', 'Compass Kid'],
+  ['u', '🌴', 'Palm Guardian'], ['u', '🌾', 'Delta Farmer'], ['u', '🏝️', 'Siwa Prince'], ['u', '🐐', 'Plateau Goatherd'],
+  ['r', '🦀', 'Crab Hunter'], ['r', '🤿', 'Red Sea Diver'], ['r', '🤵', 'Arish Groom'], ['r', '⛵', 'Bahariya Sailor'],
+  ['e', '🥷', 'Catherine Ninja'], ['e', '🧙', 'Summit Wizard'], ['e', '🌀', 'Spin Master'], ['e', '🐧', 'Polar Penguin'],
+  ['l', '🐉', 'Desert Dragon'], ['l', '🧑‍🚀', 'Space Explorer'], ['l', '👑', 'Map Pharaoh'], ['l', '⚡', 'Fault King']]);
+addKind('weapon', 'w', [
+  ['c', '🪃', 'Oasis Boomerang'], ['c', '🏹', 'Traveler Bow'], ['c', '🔦', 'Explorer Torch'], ['c', '🪓', 'Lumber Axe'],
+  ['u', '🗡️', 'Sand Dagger'], ['u', '🛡️', 'Palm Shield'], ['u', '🔱', 'Delta Trident'], ['u', '🔫', 'Water Blaster'],
+  ['r', '⚔️', 'Desert Blade'], ['r', '🧲', 'Mineral Magnet'], ['r', '🌪️', 'Tornado Launcher'], ['r', '🎯', 'Tropic Bow'],
+  ['e', '🔨', 'Fault Hammer'], ['e', '🧊', 'Snow Cannon'], ['e', '🪄', 'Map Wand'], ['e', '💫', 'Orbit Star'],
+  ['l', '🌩️', 'Storm Strike'], ['l', '☀️', 'Sun Beam'], ['l', '🌋', 'Volcano Fist'], ['l', '💎', 'Diamond Sword']]);
+addKind('hero', 'h', [
+  ['c', '🦸', 'Compass Boy'], ['c', '🦸‍♀️', 'Oasis Girl'], ['c', '🧑‍🔬', 'Junior Scientist'], ['c', '🕵️', 'Map Detective'],
+  ['u', '🧜‍♀️', 'Red Sea Guardian'], ['u', '🧚', 'Palm Fairy'], ['u', '🧝', 'Delta Archer'], ['u', '🤖', 'Sand Robot'],
+  ['r', '🦅', 'Golden Falcon'], ['r', '🐺', 'Desert Wolf'], ['r', '🧞', 'Oasis Genie'], ['r', '🦁', 'Sinai Lion'],
+  ['e', '🧙‍♀️', 'Weather Witch'], ['e', '🦖', 'Valley Dino'], ['e', '🐻‍❄️', 'Pole Keeper'], ['e', '🦸‍♂️', 'Captain Equator'],
+  ['l', '🌞', 'Sun King'], ['l', '🌍', 'Planet Guardian'], ['l', '🦂', 'Mega Scorpion'], ['l', '🔥', 'The Phoenix']]);
+addKind('car', 'v', [
+  ['c', '🛺', 'Deluxe Tuk-Tuk'], ['c', '🚲', 'Oasis Bike'], ['c', '🛵', 'Delivery Scooter'], ['c', '🚌', 'Field-Trip Bus'],
+  ['u', '🚙', 'Safari Jeep'], ['u', '🚜', 'Delta Tractor'], ['u', '🛻', 'Desert Pickup'], ['u', '🚐', 'Camper Van'],
+  ['r', '🏍️', 'Dune Bike'], ['r', '🚤', 'Nile Speedboat'], ['r', '🚁', 'Rescue Chopper'], ['r', '🚂', 'Qattara Express'],
+  ['e', '🏎️', 'Race Car'], ['e', '🛸', 'Flying Saucer'], ['e', '🛩️', 'Jet Plane'], ['e', '🚒', 'Mega Fire Truck'],
+  ['l', '🚘', 'Pharaoh Limo'], ['l', '🛰️', 'Satellite'], ['l', '🚀', 'Space Shuttle'], ['l', '🏁', 'Golden F1']]);
+const item = id => ITEMS.find(x => x.id === id);
+const skin = item;
+let locker = new Set(store.get('locker', [])), coins = store.get('coins', 0), royBest = store.get('roybest', 0);
+let loadout = store.get('loadout', {}); { const old = store.get('skin', null); if (old && !loadout.skin) loadout.skin = old; }
+let claimed = new Set(store.get('claimed', []));
+let pack = null;   // the pack being opened: { tier, max, items:[{it, isNew, dup}], shown }
+const PACK = { c: 2, u: 3, r: 3, e: 4, l: 5, max: 6 };
+const ORDER = ['c', 'u', 'r', 'e', 'l'];
+const MILESTONES = [[10, 'u'], [20, 'r'], [30, 'r'], [45, 'e'], [60, 'e'], [80, 'l']];
+const DIR = { qattara: 'شمال', siwa: 'شمال', bahariya: 'وسط', farafra: 'وسط', dakhla: 'جنوب', kharga: 'جنوب', maaza: 'شمال', ababda: 'جنوب',
+  halal: 'شمال', plains: 'شمال', arish: 'وسط', teeh: 'وسط', catherine: 'جنوب', moses: 'جنوب', delta: 'شمال', cairo: 'شمال' };
+const NUMS = [
+  ['مدار السرطان 🦀 عند كام درجة؟', '23.5° شمال'], ['مدار الجدي 🐐 عند كام درجة؟', '23.5° جنوب'], ['الدائرة القطبية ❄️ عند كام درجة؟', '66.5°'],
+  ['خط الاستواء 🔴 عند كام درجة؟', '0°'], ['القطب الشمالي 🧊 عند كام درجة؟', '90°'], ['عدد خطوط الطول كام؟', '360'], ['عدد دوائر العرض كام؟', '180'],
+  ['الأرض بتلف حوالين نفسها 🌀 مرة كل…', '24 ساعة'], ['الأرض بتلف حوالين الشمس ☀️ مرة كل…', '365 يوم وربع'], ['فصل الشتاء ⛄ بيبدأ يوم…', '21 ديسمبر'],
+  ['فصل الصيف 🏖️ بيبدأ يوم…', '21 يونيو'], ['كل 15° من خطوط الطول = …', 'ساعة'], ['كل خط طول والي بعده = …', '4 دقايق'], ['خط جرينتش 🕰️ عند كام درجة؟', '0°'],
+];
+const SEASON_LINE = [['⛄ الشتاء', 'capricorn'], ['🏖️ الصيف', 'cancer'], ['🌸 الربيع', 'equator'], ['🍂 الخريف', 'equator']];
+const GLOBE_TAP = ['polarN', 'cancer', 'equator', 'capricorn', 'polarS', 'greenwich', 'egypt', 'spin'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const sample = (a, n) => shuffle(a).slice(0, n);
+function opts4(right, pool) { return shuffle([right, ...sample([...new Set(pool)].filter(x => x !== right), 3)]); }
+
+const QGEN = {
+  whereMap() { const s = pick(MAP_SPOTS); return { view: 'egypt', tag: '📍 فين ده؟', prompt: `دوس على مكان <b>${s.name}</b> على الخريطة`, tap: { kind: 's', id: s.id } }; },
+  whereRegion() { const r = pick(MAP_REGIONS); return { view: 'egypt', tag: '🗺️ دوس على المنطقة', prompt: `فين <b>${r.name}</b>؟`, tap: { kind: 'r', id: r.id } }; },
+  whatMap() { const s = pick(MAP_SPOTS); const same = MAP_SPOTS.filter(x => x.r === s.r).map(x => x.name);
+    return { view: 'egypt', tag: '❓ ده إيه؟', prompt: 'العلامة اللي بتنوّر <b>❓</b> على الخريطة اسمها إيه؟', hl: s.id, opts: opts4(s.name, same.length > 3 ? same : MAP_SPOTS.map(x => x.name)), ans: s.name, show: s.id }; },
+  whichRegion() { const s = pick(MAP_SPOTS); return { view: 'egypt', tag: '🧩 أنهي منطقة؟', prompt: `<b>${s.emo} ${s.name}</b> في أنهي منطقة؟`, opts: shuffle(MAP_REGIONS.map(r => r.name)), ans: reg(s.r).name, show: s.id }; },
+  dir() { const id = pick(Object.keys(DIR)), s = spot(id); return { view: 'egypt', tag: '🧭 شمال ولا جنوب؟', prompt: `<b>${s.emo} ${s.name}</b> في <b>شمال</b> ولا <b>وسط</b> ولا <b>جنوب</b> ${reg(s.r).name}؟`, opts: ['شمال', 'وسط', 'جنوب'], ans: DIR[id], show: s.id }; },
+  emoji() { const s = pick(MAP_SPOTS.concat(GLOBE_SPOTS)); const pool = (s.r === 'globe' ? GLOBE_SPOTS : MAP_SPOTS).map(x => x.name);
+    return { view: s.r === 'globe' ? 'globe' : 'egypt', tag: '🖼️ العلامة دي بتاعة مين؟', prompt: `<span class="bigemo">${s.emo}</span>`, opts: opts4(s.name, pool), ans: s.name, show: s.id }; },
+  tf() { const s = pick(MAP_SPOTS), real = reg(s.r), yes = Math.random() < .5, r = yes ? real : pick(MAP_REGIONS.filter(x => x.id !== s.r));
+    return { view: 'egypt', tag: '✅❌ صح ولا غلط؟', prompt: `«<b>${s.name}</b> موجود في <b>${r.name}</b>»`, opts: ['✅ صح', '❌ غلط'], ans: yes ? '✅ صح' : '❌ غلط', show: s.id }; },
+  odd() { const r = pick(MAP_REGIONS.filter(x => MAP_SPOTS.filter(s => s.r === x.id).length >= 3)); const in3 = sample(MAP_SPOTS.filter(s => s.r === r.id), 3), out = pick(MAP_SPOTS.filter(s => s.r !== r.id));
+    return { view: 'egypt', tag: '🕵️ مين الغريب؟', prompt: `3 من دول في <b>${r.name}</b>… مين اللي <b>مش</b> منهم؟`, opts: shuffle(in3.concat(out).map(s => s.emo + ' ' + s.name)), ans: out.emo + ' ' + out.name, show: out.id }; },
+  whereGlobe() { const s = spot(pick(GLOBE_TAP)); return { view: 'globe', tag: '🌍 دوس على الكورة', prompt: `فين <b>${s.name}</b>؟`, tap: { kind: 's', id: s.id } }; },
+  seasonLine() { const [n, id] = pick(SEASON_LINE); return { view: 'globe', tag: '☀️ الشمس فين؟', prompt: `في <b>${n}</b> الشمس بتبقى عمودية على أنهي خط؟ <b>دوس عليه</b> على الكورة`, tap: { kind: 's', id } }; },
+  number() { const [q, a] = pick(NUMS); return { view: 'globe', tag: '🔢 الرقم السحري', prompt: q, opts: opts4(a, NUMS.map(x => x[1])), ans: a }; },
+  time() { const h = pick([1, 2, 3, 4, 6]);
+    const lab = n => n === 1 ? '1 ساعة' : n === 2 ? 'ساعتين' : n + ' ساعات';
+    return { view: 'globe', tag: '⏰ حسبة التوقيت', prompt: `بلدين بينهم <b>${h * 15}°</b> خطوط طول… فرق الساعة كام؟ <small>(كل 15° = ساعة)</small>`, opts: shuffle([...new Set([h, h + 1, h * 2, Math.max(1, h - 1), h + 3])].slice(0, 4)).map(lab), ans: lab(h) }; },
+};
+const QTYPES = Object.keys(QGEN);
+function royStart() {
+  const types = shuffle(QTYPES).concat(shuffle(QTYPES)).slice(0, 10);
+  const qs = types.map(t => QGEN[t]());
+  roy = { qs, i: 0, score: 0, correct: 0, streak: 0, alive: 100, done: false, fb: '', mark: {}, q: qs[0], answered: false, reward: null, opened: false };
+  mGame = null; mRegion = null; mSpot = null; mVB = FULL.slice(); mMode = qs[0].view;
+  drawMap();
+}
+function royPanel() {
+  if (roy.done) return royEnd();
+  const q = roy.q;
+  return `<div class="rcard"><div class="status en" dir="ltr"><span>Q ${roy.i + 1} / ${roy.qs.length}</span><span class="bar"><i style="width:${roy.i / roy.qs.length * 100}%"></i></span><span>✅ ${roy.correct}</span></div>
+    <div class="rtag">${q.tag}</div><div class="qq">${q.prompt}</div>
+    ${q.opts ? `<div class="opts">${q.opts.map((o, i) => `<button class="opt" data-ro="${i}" ${roy.answered ? 'disabled' : ''}>${o}</button>`).join('')}</div>` : `<div class="zhint">👆 دوس على ${q.view === 'globe' ? 'الكورة' : 'الخريطة'} فوق</div>`}
+    <div id="rfb">${roy.fb}</div>
+    ${roy.answered ? `<div class="actions" dir="ltr"><button class="btn royale" id="rnext" style="grid-column:1/-1">${roy.i + 1 < roy.qs.length ? 'NEXT ➜' : '🏁 FINISH MATCH'}</button></div>` : ''}
+    <button class="back-btn en" id="rquit" style="align-self:center">✕ Quit match</button></div>`;
+}
+function royAnswer(ok, rightText) {
+  const q = roy.q; roy.answered = true;
+  if (ok) {
+    roy.correct++; roy.streak++; const gain = 100 + (roy.streak - 1) * 25; roy.score += gain;
+    roy.alive = Math.max(1, 100 - roy.correct * 11);
+    roy.fb = `<div class="fb ok en" dir="ltr">🎯 HIT! +${gain} XP ${roy.streak > 1 ? `🔥 x${roy.streak} STREAK` : ''}</div>`;
+  } else {
+    roy.streak = 0;
+    roy.fb = `<div class="fb no"><span class="en" dir="ltr">💥 MISSED!</span> الإجابة الصح: <b>${rightText}</b></div>`;
+  }
+  const info = q.show ? spot(q.show) : q.tap && q.tap.kind === 's' ? spot(q.tap.id) : null;
+  if (info) { roy.mark[info.id] = 'right'; roy.fb += `<div class="strick">${info.emo} ${info.trick}</div>`; }
+  else if (q.tap && q.tap.kind === 'r') roy.fb += `<div class="strick">${reg(q.tap.id).trick}</div>`;
+  drawMap();
+}
+function royTap(kind, id, el) {
+  const q = roy.q;
+  if (roy.answered || roy.done || !q.tap) return;
+  if (q.tap.kind !== kind) { el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 400); return; }
+  const ok = id === q.tap.id;
+  if (!ok && kind === 's') roy.mark[id] = 'wrong';
+  royAnswer(ok, kind === 'r' ? reg(q.tap.id).name : spot(q.tap.id).name);
+  if (ok && el) addStars(1, el);
+}
+function royHud() {
+  const L = ['skin', 'weapon', 'hero', 'car'].map(k => loadout[k] && item(loadout[k])).filter(Boolean);
+  return `<div class="hud en" dir="ltr"><span class="loadout">${L.length ? L.map(x => `<span class="hsk" style="background:${RAR[x.r].bg}">${x.emo}</span>`).join('') : '<span class="hsk">🧍</span>'}</span>
+    <span>🧍 <b>${roy.alive}</b> LEFT</span><span>🔥 <b>${roy.streak}</b></span><span>⭐ <b>${roy.score}</b> XP</span><span>🪙 <b>${coins}</b></span></div>`;
+}
+function royEnd() {
+  const c = roy.correct, rank = c === 10 ? 1 : 2 + (10 - c) * 6;
+  const tier = c >= 10 ? 'max' : c === 9 ? 'e' : c >= 7 ? 'r' : c >= 5 ? 'u' : c >= 3 ? 'c' : null;
+  if (!roy.reward) {
+    const earn = c * 10 + (c === 10 ? 150 : 0); coins += earn; store.set('coins', coins);
+    if (roy.score > royBest) { royBest = roy.score; store.set('roybest', royBest); }
+    roy.reward = { tier, earn };
+  }
+  const R = roy.reward, isMax = R.tier === 'max', look = isMax ? { name: 'MAX', col: '#ffd700', bg: 'linear-gradient(135deg,#fff3a0,#ffb300 40%,#ff3d7f)' } : R.tier && RAR[R.tier];
+  const box = !R.tier ? `<p>Get at least <b>3 right</b> to earn a pack 🎁 — play again!</p>`
+    : roy.opened ? `<p>✅ Pack opened! See your stuff in <b>🏆 Collection</b></p>`
+    : `<button class="gift${isMax ? ' max' : ''}" id="ropen" style="--rc:${look.col};background:${look.bg}">${isMax ? '👑' : '🎁'}<span>${isMax ? 'MAX PACK' : look.name.toUpperCase() + ' PACK'}</span><small>${PACK[R.tier]} items inside — tap to open</small></button>`;
+  return `<div class="rend en ${rank === 1 ? 'win' : ''}" dir="ltr"><div class="rank">#${rank}</div>
+    <h2>${rank === 1 ? '🏆 GEO VICTORY!' : rank <= 10 ? '🔥 SO CLOSE!' : '💪 NEXT MATCH IS YOURS'}</h2>
+    <p>✅ ${c}/10 • ⭐ ${roy.score} XP • 🪙 +${R.earn} GeoCoins</p>
+    <div class="tiers">${[['c', 3], ['u', 5], ['r', 7], ['e', 9]].map(([t, n]) => `<span style="background:${RAR[t].col}" class="${t === R.tier ? 'on' : ''}">${n}+ ${RAR[t].en}</span>`).join('')}<span style="background:linear-gradient(90deg,#ffb300,#ff3d7f)" class="${isMax ? 'on' : ''}">10/10 👑 MAX</span></div>
+    ${box}</div>
+    <div class="actions en" dir="ltr"><button class="btn royale" id="ragain">🪂 NEW MATCH</button><button class="btn nav" id="rlock">🏆 COLLECTION</button></div>`;
+}
+function rollRarity(max, min) {
+  const w = { c: 50, u: 30, r: 13, e: 5, l: 2 }, ok = ORDER.slice(ORDER.indexOf(min || 'c'), ORDER.indexOf(max) + 1);
+  let n = Math.random() * ok.reduce((a, t) => a + w[t], 0);
+  for (const t of ok) { n -= w[t]; if (n <= 0) return t; } return ok[0];
+}
+function rollItem(r) {
+  const kind = pick(KINDS).id, all = ITEMS.filter(x => x.kind === kind && x.r === r), fresh = all.filter(x => !locker.has(x.id));
+  return fresh.length && Math.random() < .75 ? pick(fresh) : pick(all);
+}
+function makePack(tier) {
+  const isMax = tier === 'max';
+  const rar = isMax ? ['l', 'e'].concat(Array.from({ length: 4 }, () => rollRarity('l', 'r')))
+    : [tier].concat(Array.from({ length: PACK[tier] - 1 }, () => rollRarity(tier)));
+  const seen = new Set(); const items = rar.map(r => { let it, n = 0; do { it = rollItem(r); } while (seen.has(it.id) && ++n < 30); seen.add(it.id); return it; }).map(it => {
+    const isNew = !locker.has(it.id), dup = isNew ? 0 : { c: 10, u: 20, r: 40, e: 80, l: 150 }[it.r];
+    if (isNew) { locker.add(it.id); if (!loadout[it.kind]) loadout[it.kind] = it.id; } else coins += dup;
+    return { it, isNew, dup };
+  }).sort((a, b) => ORDER.indexOf(a.it.r) - ORDER.indexOf(b.it.r));
+  store.set('locker', [...locker]); store.set('coins', coins); store.set('loadout', loadout);
+  return { tier, max: isMax, items, shown: 0 };
+}
+function itemCard(x, small) {
+  const R = RAR[x.r], K = KINDS.find(k => k.id === x.kind);
+  return `<div class="skin r-${x.r}${small ? ' sm' : ''}" style="background:${R.bg};--rc:${R.col}"><div class="sk">${K.emo} ${K.name}</div><div class="se">${x.emo}</div><div class="sn">${x.name}</div><div class="sr">${R.en}</div></div>`;
+}
+const skinCard = itemCard;
+function openPack(tier, after) { pack = makePack(tier); pack.after = after; showPack(); }
+function showPack() {
+  let ov = $('packOv'); if (!ov) { ov = document.createElement('div'); ov.id = 'packOv'; ov.className = 'locker packov en'; ov.dir = 'ltr'; document.body.appendChild(ov); }
+  const P = pack, all = P.shown >= P.items.length, title = P.max ? '👑 MAX PACK' : '🎁 ' + RAR[P.tier].en.toUpperCase() + ' PACK';
+  ov.classList.toggle('maxov', P.max);
+  ov.innerHTML = `${P.max ? '<div class="rays"></div>' : ''}<div class="lk" style="align-items:center;text-align:center;position:relative">
+    <h2 class="ptitle" style="color:${P.max ? '#ffd700' : RAR[P.tier].col}">${title}</h2>
+    ${P.max ? '<p class="maxsub">PERFECT 10/10! 🔥 1 LEGENDARY + 1 EPIC GUARANTEED</p>' : ''}
+    <p>${all ? 'All yours! 🎉' : 'Tap each card to flip it 👇'}</p>
+    <div class="prow">${P.items.map((x, i) => i < P.shown
+      ? `<div class="pslot${i === P.shown - 1 ? ' flipin' : ''}">${itemCard(x.it)}${x.isNew ? '<span class="pnew">NEW!</span>' : `<span class="pdup">DUPLICATE +${x.dup} 🪙</span>`}</div>`
+      : `<button class="pback${i === P.shown ? ' next' : ''}" data-pi="${i}" style="--rc:${RAR[P.items[i].it.r].col}">❓</button>`).join('')}</div>
+    ${all ? `<button class="btn royale" id="pdone" style="min-width:60%">👌 AWESOME</button>` : `<button class="back-btn" id="pall">Flip all</button>`}</div>`;
+  ov.hidden = false;
+  ov.querySelectorAll('.pback').forEach(b => b.onclick = () => {
+    if (+b.dataset.pi !== P.shown) return; P.shown++;
+    const r = P.items[P.shown - 1].it.r; if (r === 'l' || r === 'e') { addStars(2, b); confetti(r === 'l' ? 40 : 18); }
+    showPack();
+  });
+  const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
+  on('pall', () => { P.shown = P.items.length; if (P.max) confetti(50); showPack(); });
+  on('pdone', () => { ov.hidden = true; const f = P.after; pack = null; if (f) f(); });
+  if (P.max && P.shown === 0 && !P.boom) { P.boom = true; confetti(60); }
+}
+function confetti(n) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'); s.className = 'conf'; s.textContent = pick(['⭐', '✨', '🎉', '💎', '🪙', '🌟']);
+    s.style.left = Math.random() * 100 + 'vw'; s.style.animationDuration = 1.6 + Math.random() * 1.6 + 's'; s.style.animationDelay = Math.random() * .6 + 's';
+    document.body.appendChild(s); setTimeout(() => s.remove(), 4000);
+  }
+}
+function royBind() {
+  const on = (id, f) => { const el = $(id); if (el) el.onclick = f; };
+  document.querySelectorAll('[data-ro]').forEach(b => b.onclick = () => {
+    if (roy.answered) return; const o = roy.q.opts[+b.dataset.ro], ok = o === roy.q.ans;
+    royAnswer(ok, roy.q.ans); if (ok) addStars(1, $('stars'));
+  });
+  on('rnext', () => { roy.i++; if (roy.i >= roy.qs.length) { roy.done = true; if (roy.correct === 10) confetti(50); } else { roy.q = roy.qs[roy.i]; roy.answered = false; roy.fb = ''; roy.mark = {}; mMode = roy.q.view; } drawMap(); });
+  on('rquit', () => { roy = null; drawMap(); });
+  on('ragain', royStart);
+  on('rlock', openLocker);
+  on('ropen', () => { roy.opened = true; openPack(roy.reward.tier, drawMap); });
+}
+let galKind = 'skin';
+function openLocker() {
+  let ov = $('lockerOv'); if (!ov) { ov = document.createElement('div'); ov.id = 'lockerOv'; ov.className = 'locker en'; ov.dir = 'ltr'; document.body.appendChild(ov); }
+  const price = 300, total = ITEMS.length, have = ITEMS.filter(x => locker.has(x.id)).length;
+  const ms = MILESTONES.map(([n, t]) => {
+    const st = claimed.has(n) ? 'done' : have >= n ? 'ready' : 'lock';
+    return `<button class="ms ${st}" data-ms="${n}" style="--rc:${RAR[t].col}" ${st === 'ready' ? '' : 'disabled'}>${st === 'done' ? '✅' : st === 'ready' ? '🎁' : '🔒'}<b>${n}</b><small>${RAR[t].en}</small></button>`;
+  }).join('');
+  const mine = ITEMS.filter(x => x.kind === galKind);
+  ov.innerHTML = `<div class="lk"><div class="lkh"><h2>🏆 COLLECTION</h2><button class="back-btn" id="lkx">✕ Close</button></div>
+    <div class="gtot"><div class="gbar"><i style="width:${have / total * 100}%"></i></div><p>Collected <b>${have}</b> / <b>${total}</b> • 🪙 <b>${coins}</b> GeoCoins • Best match ⭐ ${royBest} XP</p></div>
+    <h3 style="color:#ffd66b">🎯 COLLECTION REWARDS — collect more, get free packs</h3><div class="msrow">${ms}</div>
+    <button class="btn royale" id="lkbuy" ${coins < price ? 'disabled style="opacity:.5"' : ''}>🛒 ITEM SHOP: Rare Pack — ${price} 🪙</button>
+    <details class="backup"><summary>💾 SAVE / LOAD PROGRESS — keep your prizes safe</summary>
+      <p>Copy your <b>save code</b> and keep it (WhatsApp it to yourself). On a new iPad or browser, paste it here and tap LOAD.</p>
+      <div class="bkrow"><button class="btn nav" id="bksave">💾 SAVE CODE</button><button class="btn good" id="bkload">📥 LOAD CODE</button></div>
+      <textarea id="bkcode" rows="3" placeholder="Your save code appears here — or paste a code to load"></textarea><div id="bkmsg"></div></details>
+    <div class="ktabs">${KINDS.map(k => { const n = ITEMS.filter(x => x.kind === k.id && locker.has(x.id)).length;
+      return `<button class="chip" data-gk="${k.id}" aria-pressed="${k.id === galKind}">${k.emo} ${k.name} ${n}/20</button>`; }).join('')}</div>
+    ${[...ORDER].reverse().map(t => `<h3 style="color:${RAR[t].col}">${RAR[t].en.toUpperCase()}</h3><div class="lkg">${mine.filter(x => x.r === t).map(x => locker.has(x.id)
+      ? `<button class="lkb${loadout[x.kind] === x.id ? ' eq' : ''}" data-it="${x.id}">${itemCard(x, true)}<span>${loadout[x.kind] === x.id ? '✅ EQUIPPED' : 'EQUIP'}</span></button>`
+      : `<div class="lkb lockd" style="background:${RAR[t].bg}">🔒<span>???</span></div>`).join('')}</div>`).join('')}</div>`;
+  ov.hidden = false;
+  $('lkx').onclick = () => { ov.hidden = true; drawMap(); };
+  ov.querySelectorAll('[data-gk]').forEach(b => b.onclick = () => { galKind = b.dataset.gk; openLocker(); });
+  ov.querySelectorAll('[data-it]').forEach(b => b.onclick = () => { const x = item(b.dataset.it); loadout[x.kind] = x.id; store.set('loadout', loadout); openLocker(); });
+  ov.querySelectorAll('.ms.ready').forEach(b => b.onclick = () => {
+    const n = +b.dataset.ms, t = MILESTONES.find(m => m[0] === n)[1]; claimed.add(n); store.set('claimed', [...claimed]);
+    ov.hidden = true; openPack(t, openLocker);
+  });
+  $('bksave').onclick = () => {
+    const data = {}; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('geo-')) data[k] = localStorage.getItem(k); } } catch (e) {}
+    const code = 'GEO1:' + btoa(unescape(encodeURIComponent(JSON.stringify(data)))); const ta = $('bkcode'); ta.value = code; ta.select();
+    const done = () => { $('bkmsg').textContent = '✅ Code copied! Keep it somewhere safe.'; };
+    try { navigator.clipboard.writeText(code).then(done, () => { $('bkmsg').textContent = '👆 Select the code and copy it.'; }); } catch (e) { $('bkmsg').textContent = '👆 Select the code and copy it.'; }
+  };
+  $('bkload').onclick = () => {
+    const v = $('bkcode').value.trim();
+    try {
+      if (!v.startsWith('GEO1:')) throw 0;
+      const data = JSON.parse(decodeURIComponent(escape(atob(v.slice(5)))));
+      Object.entries(data).forEach(([k, val]) => { if (k.startsWith('geo-')) localStorage.setItem(k, val); });
+      $('bkmsg').textContent = '✅ Loaded! Restarting…'; setTimeout(() => location.reload(), 700);
+    } catch (e) { $('bkmsg').textContent = '❌ That code doesn\'t look right. Paste the whole code that starts with GEO1:'; }
+  };
+  $('lkbuy').onclick = () => { if (coins < price) return; coins -= price; store.set('coins', coins); ov.hidden = true; openPack('r', openLocker); };
+}
+
+renderChips(); setTab(['map', 'exam', 'play'].includes(store.get('tab', 'map')) ? store.get('tab', 'map') : 'map');
+</script>
+
+</body>
+</html>
